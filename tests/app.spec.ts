@@ -10,7 +10,7 @@ test('three worlds, gameplay, pause, reset and help work without browser errors'
   await page.getByRole('button',{name:'ゲームに戻る'}).click();await page.getByRole('button',{name:'視点リセット'}).click();
   await page.getByRole('button',{name:'一時停止'}).click();await page.getByRole('button',{name:'ステージ選択へ'}).click();
  }
- await page.getByRole('button',{name:'遊び方'}).click();await expect(page.getByRole('heading',{name:'重力を、味方に。'})).toBeVisible();await page.getByRole('button',{name:'わかった'}).click();
+ await page.getByRole('button',{name:'遊び方'}).click();await expect(page.getByRole('dialog').getByText('1本指で回す',{exact:true})).toBeVisible();await page.getByRole('button',{name:'わかった'}).click();
  expect(errors).toEqual([]);await page.screenshot({path:'test-results/desktop.png',fullPage:true});
 });
 test('phone layout has no overflow and all worlds restart offline',async({page,context})=>{
