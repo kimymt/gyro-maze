@@ -69,3 +69,21 @@ dialog .install-heading{font-size:22px;margin:0 0 24px}
 
 .header>.icon-button{margin-left:auto}
 @media(max-width:760px){.intro{display:none}}
+
+/* Readable utility text; keep the stage as the visual focus. */
+:root{font-size:16px}
+.eyebrow,.scene-caption,.hud-title>span,.record,.difficulty,.level-heading,.scene-index,.footer,.result-stats span{font-size:12px;letter-spacing:.02em}
+.intro-copy{margin-top:0;font-size:16px;line-height:1.7}
+.level-number{font-size:16px}
+.primary,dialog .secondary,.text-button,.quality-setting{font-size:16px;line-height:1.5}
+.level-heading{line-height:1.5}
+#scene-description{font-size:14px;line-height:1.6;margin-bottom:16px}
+.gesture-hint{font-size:12px;line-height:1.5;gap:8px;flex-wrap:wrap}
+.footer{font-size:12px;line-height:1.5}
+.play-tools,.progress-row{font-size:14px;line-height:1.5}
+#toast{font-size:14px;line-height:1.5;text-align:center}
+dialog>p:not(.eyebrow),.help-steps p,.install-steps li{font-size:16px;line-height:1.7}
+.help-steps b,.install-step-number{font-size:13px}
+.install-steps small{font-size:13px;line-height:1.6}
+.install-banner h2{font-size:16px}
+.install-link{font-size:14px;line-height:1.5}

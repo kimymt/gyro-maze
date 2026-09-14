@@ -76,7 +76,7 @@ function finish(){
 }
 let helpWasPlaying=false;
 function help(){helpWasPlaying=progress.phase==='playing';if(helpWasPlaying)progress.pause();input?.clear();renderHelp();}
-function renderHelp(){showDialog(`<h2>遊び方</h2><div class="help-steps"><p><b>01</b><span><strong>1本指で回す</strong>ドラッグで迷路を傾ける。指を離すと迷路は止まり、球は転がり続けます。</span></p><p><b>02</b><span><strong>2本指で調整</strong>ひねって回転。ピンチで拡大・縮小。上下を裏返すこともできます。</span></p><p><b>03</b><span><strong>緑のリングへ</strong>金色の中継点を順番に通り、ゴールで球を止めるとクリア。見えない壁が球を守るので、裏返しても落ちません。</span></p></div><p class="help-note">オフラインで遊ぶには、Safariの共有メニューから「ホーム画面に追加」。追加後に開き直し、「オフラインで遊べます」の表示を確認してください。</p>${installGuide.canOffer?'<button class="text-button help-install" data-action="install-guide">ホーム画面に追加する方法を見る</button>':''}<button class="primary" data-action="close-help">わかった ${icon('arrow')}</button>`,'help');}
+function renderHelp(){showDialog(`<h2>遊び方</h2><div class="help-steps"><p><b>01</b><span><strong>1本指で回す</strong>ドラッグで迷路を傾ける。指を離しても球は転がり続けます。</span></p><p><b>02</b><span><strong>2本指で調整</strong>ひねって回転。ピンチで拡大・縮小。</span></p><p><b>03</b><span><strong>緑のリングへ</strong>金色の中継点を順に通り、緑のゴールで球を止めるとクリア。</span></p></div><p class="help-note">Safariからホーム画面に追加したアプリで、「オフラインで遊べます」を確認してください。</p>${installGuide.canOffer?'<button class="text-button help-install" data-action="install-guide">ホーム画面に追加する方法を見る</button>':''}<button class="primary" data-action="close-help">わかった ${icon('arrow')}</button>`,'help');}
 let installFromHelp=false;
 function showInstallGuide(){
   if(!installGuide.canOffer)return;
