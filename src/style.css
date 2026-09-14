@@ -2,7 +2,7 @@
 :root{
   color-scheme:light;
   --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
-  --text:#26382e;--page-bg:#f4f5ed;--muted:#53685b;--subtle:#5e7264;--faint:#65796b;
+  --text:#26382e;--page-bg:#f4f5ed;--muted:#53685b;--subtle:#53685b;--faint:#53685b;
   --accent:#496925;--action-bg:#d8f69a;--action-text:#243226;
   --line:rgba(56,82,62,.2);--shell-glow:#b6cbaa38;
   --selected-start:#b7d29945;--selected-end:#b7d29912;
