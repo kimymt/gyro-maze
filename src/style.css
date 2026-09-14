@@ -92,3 +92,12 @@ dialog>p:not(.eyebrow),.help-steps p,.install-steps li{font-size:16px;line-heigh
   .shell:not(.is-playing) .viewer{flex-basis:420px;height:420px;min-height:420px;max-height:620px}
   .level{min-height:60px}
 }
+
+/* Larger targets without enlarging icon artwork. */
+.brand{min-height:44px}
+.icon-button,.header>.icon-button,.play-hud .icon-button{width:44px;height:44px;min-width:44px}
+.play-tools button,.offline-status button,.quality-setting select{min-width:44px;min-height:44px}
+.quality-setting select{font-size:16px}
+@media(max-height:550px) and (orientation:landscape){
+  .is-playing .header{height:calc(52px + var(--safe-top))}
+}
