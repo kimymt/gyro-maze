@@ -155,9 +155,14 @@ function frame(time:number){
 }
 async function boot(){
   try{
+    // Download the engine while the scene is built; handle failure immediately.
+    const physicsReady=initPhysics().then(()=>({ok:true as const}),error=>({ok:false as const,error}));
     scene=new Scene(canvas);scene.setQuality(saved.quality==='low');select(0);
     input=new Input(canvas,()=>ready&&(progress.phase==='playing'||progress.phase==='select'),q=>scene.rotate(q),r=>scene.setZoom(r));
-    requestAnimationFrame(frame);await initPhysics();ready=true;select(selected);$('.start').removeAttribute('disabled');$('#start-label').textContent='この世界で遊ぶ';installUI();
+    requestAnimationFrame(frame);
+    const physicsResult=await physicsReady;if(!physicsResult.ok)throw physicsResult.error;
+    physics=new Physics(levels[selected]);currentPosition.copy(physics.ball.translation());previousPosition.copy(currentPosition);
+    ready=true;scene.needsRender=true;$('.start').removeAttribute('disabled');$('#start-label').textContent='この世界で遊ぶ';installUI();
   }catch(error){console.error(error);$('#start-label').textContent='読み込めませんでした';toast('再読み込みしてお試しください');showDialog('<h2>ゲームを開けませんでした。</h2><p>通信状態とブラウザの3D描画対応を確認し、再読み込みしてください。</p><button class="primary" data-action="reload">再読み込み</button>');}
 }
 void boot();
