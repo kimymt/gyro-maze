@@ -100,4 +100,5 @@ dialog>p:not(.eyebrow),.help-steps p,.install-steps li{font-size:16px;line-heigh
 .quality-setting select{font-size:16px}
 @media(max-height:550px) and (orientation:landscape){
   .is-playing .header{height:calc(52px + var(--safe-top))}
+  .is-playing #toast{top:10px;max-width:calc(100% - 280px);padding:10px 14px}
 }
