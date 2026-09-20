@@ -1,0 +1,18 @@
+{
+  "baseCommit": "98a96d7ae51f4e238e70eb51521970e5425d459a",
+  "scope": "temporary omission of stage03 final four guide points; analytical necessary conditions only; production unchanged",
+  "current": {
+    "routeLength": 75.33340787936442,
+    "minimumForwardConeDegrees": 85.73383319679817,
+    "minimumBrakingConeDegrees": 62.390453362246376,
+    "points": 1524,
+    "blocks": 486
+  },
+  "withoutUpperReturn": {
+    "routeLength": 55.72368818005465,
+    "minimumForwardConeDegrees": 7.6346808022925075,
+    "minimumBrakingConeDegrees": 62.38612963484948,
+    "points": 1128,
+    "blocks": 531
+  }
+}

@@ -1,0 +1,797 @@
+{
+  "baselineCommit": "98a96d7ae51f4e238e70eb51521970e5425d459a",
+  "timestamp": "2026-09-20T13:31:03.331Z",
+  "environment": {
+    "node": "v26.7.0",
+    "chromium": "153.0.8010.12",
+    "platform": "darwin",
+    "osRelease": "27.0.0",
+    "cpu": "Apple M4",
+    "viewport": {
+      "width": 393,
+      "height": 852
+    }
+  },
+  "conditions": {
+    "general": "Desktop headless Chromium with SwiftShader; localhost HTTP; no CPU/network throttling; same installed dependencies; default touch mode; no input performed; five alternating runs per variant per condition. Not iPhone Safari or a real-device acceptance test.",
+    "cold": "Fresh browser context for every run; HTTP cache disabled via CDP; service workers blocked. Browser process and OS file cache are shared, so this is not a cold OS or GPU process.",
+    "warm": "One persistent context per variant; service worker/cache primed once and ready verified; five alternating revisits in a fresh page within the same context, retaining HTTP and service-worker caches. Pages close between runs so only one game renders at a time. Warm-up navigations are stored separately and excluded from medians.",
+    "metrics": "Navigation-relative milliseconds. ready is the first enabled start-button mutation, FCP comes from Paint Timing, SWready is the first app offline-ready text, LCP is the latest value after 350ms post-ready settling. Missing measurements remain null. Browser instrumentation adds small equal observer overhead.",
+    "limitations": "Localhost removes real download latency; GPU/software rendering and desktop sensor absence do not predict iPhone startup, battery, heat, or sensor operation. Runs share the machine with other development work; an apparent small difference is not proof of acceleration or regression."
+  },
+  "buildsUnchanged": true,
+  "builds": {
+    "before": {
+      "files": [
+        {
+          "path": "_headers",
+          "bytes": 159,
+          "gzipBytes": 129,
+          "sha256": "7a7dacc9250ed1547a5bb508c60abf082d5a4cb4723d229dcf017014731f6b90"
+        },
+        {
+          "path": "assets/index-C0D8y_8S.css",
+          "bytes": 15064,
+          "gzipBytes": 4131,
+          "sha256": "951a180e3f8eac6b2934130e588f9901047bfd73270e1de3751bd72929265372"
+        },
+        {
+          "path": "assets/index-C6M4fkPq.js",
+          "bytes": 586156,
+          "gzipBytes": 149171,
+          "sha256": "9a449c99bd882c1496244b278e59812b14dd9258aef271bda8d802e7d283c4ba"
+        },
+        {
+          "path": "assets/rapier-D0hE8_bQ.js",
+          "bytes": 2851776,
+          "gzipBytes": 1083792,
+          "sha256": "94e9de5599b23fc6df021b26c070254451b7c276cc59d3f8cc7369c48baa2e2d"
+        },
+        {
+          "path": "icon-192.png",
+          "bytes": 4663,
+          "gzipBytes": 4669,
+          "sha256": "0391c30d775454f790d4edd9587c81227dd2e8bcba386f7a9b083a177eede600"
+        },
+        {
+          "path": "icon-512.png",
+          "bytes": 18986,
+          "gzipBytes": 16617,
+          "sha256": "d556815fcc99d9c17f73de25e871597164ed2fc3c44dfcc9311f1b85ca4a5f68"
+        },
+        {
+          "path": "icon.svg",
+          "bytes": 348,
+          "gzipBytes": 249,
+          "sha256": "7be32a38e62ca6d6a5874581fc17e394dfadec5dcf525c7179f3349ed111593c"
+        },
+        {
+          "path": "index.html",
+          "bytes": 1026,
+          "gzipBytes": 622,
+          "sha256": "d71a878d891fec99861466ac4740a1075b57fb8279e1d57a3406724dbb436452"
+        },
+        {
+          "path": "manifest.webmanifest",
+          "bytes": 344,
+          "gzipBytes": 252,
+          "sha256": "ad5cc3a35ebee8e134c0cc06b685b315cf3bf58a7cb09348a3cea6f3a42af083"
+        },
+        {
+          "path": "sw.js",
+          "bytes": 2439,
+          "gzipBytes": 1028,
+          "sha256": "afe9172515c75dd9c1fd44394cb2f250732c9fa91304fbd9bdb31a8416e1bd3b"
+        }
+      ],
+      "sources": {
+        "src/input.ts": "af211462e8a3c16f9cd1ea382e0d604a00e9866076a539bb175f895c5775e65f",
+        "src/install-guide.ts": "af1b6bf1458be113a2f75eaa3d2bc4595873e0f2708bb9d4eaf0353bf8b5e5bc",
+        "src/levels.ts": "b85e28e6331bef0a7c7676fcf9acb3d4ca6748578560c195507ceeeba926786f",
+        "src/main.ts": "e007f1cccb8005414efcd4e0017dfb2398fe574808a78d10c96422735cfcd25a",
+        "src/nature.ts": "d302830fb3bb0050603b07bc0826e63830df7172a5a519dcde883ac01bcaa155",
+        "src/offline.ts": "b0e241cc4025675791a01adf21a13c99e2d3150a965beee2a5af514c8101d154",
+        "src/physics.ts": "bbbef3ff106f18c78a56770d04efa3a6d18ba0eb354cb537dc59a4ac7c28d722",
+        "src/scene.ts": "7979cac1320b23219a6029d79841ee2651ce916daa075b0e5c413c98d144591d",
+        "src/state.ts": "02ea404eeb536c01e11055b4336436809d53a96ecc05445931eb6903d87ff868",
+        "src/style.css": "938a165600bd040165752883b994ed068cf600f23ccf46e7f4e387177d475421",
+        "src/sw.template.js": "ed0e16c1a2c933d04aa1356d618ca9dcef7a53d2ffca7fbcf70d33ade955099e",
+        "src/track.ts": "a89cca8b242b9b57ac61f6ec3b6dd9b6534e89ca6445c5bdd634e0951914f2d4"
+      },
+      "main": {
+        "path": "assets/index-C6M4fkPq.js",
+        "bytes": 586156,
+        "gzipBytes": 149171,
+        "sha256": "9a449c99bd882c1496244b278e59812b14dd9258aef271bda8d802e7d283c4ba"
+      },
+      "tilt": null,
+      "code": {
+        "bytes": 586156,
+        "gzipBytes": 149171
+      },
+      "cache": {
+        "count": 8,
+        "bytes": 3478363,
+        "separatelyGzippedBytes": 1259503
+      }
+    },
+    "after": {
+      "files": [
+        {
+          "path": "_headers",
+          "bytes": 159,
+          "gzipBytes": 129,
+          "sha256": "7a7dacc9250ed1547a5bb508c60abf082d5a4cb4723d229dcf017014731f6b90"
+        },
+        {
+          "path": "assets/index--hlKbZXZ.js",
+          "bytes": 590304,
+          "gzipBytes": 150413,
+          "sha256": "aed4586cc958982d1f6182c6ec455be6d01f4d136034d6ea0f6eb59b5ffeb868"
+        },
+        {
+          "path": "assets/index-B4Asxj3i.css",
+          "bytes": 16000,
+          "gzipBytes": 4316,
+          "sha256": "cde8ff07e71d7de306d3f0884722956360a28900c77c22f2cfe64b3397c907da"
+        },
+        {
+          "path": "assets/rapier-D0hE8_bQ.js",
+          "bytes": 2851776,
+          "gzipBytes": 1083792,
+          "sha256": "94e9de5599b23fc6df021b26c070254451b7c276cc59d3f8cc7369c48baa2e2d"
+        },
+        {
+          "path": "assets/tilt-FZkVbzu9.js",
+          "bytes": 4924,
+          "gzipBytes": 1788,
+          "sha256": "61212787253819feca998d54343893c79e0e013aa50ec6ffc85ac872be2eb810"
+        },
+        {
+          "path": "icon-192.png",
+          "bytes": 4663,
+          "gzipBytes": 4669,
+          "sha256": "0391c30d775454f790d4edd9587c81227dd2e8bcba386f7a9b083a177eede600"
+        },
+        {
+          "path": "icon-512.png",
+          "bytes": 18986,
+          "gzipBytes": 16617,
+          "sha256": "d556815fcc99d9c17f73de25e871597164ed2fc3c44dfcc9311f1b85ca4a5f68"
+        },
+        {
+          "path": "icon.svg",
+          "bytes": 348,
+          "gzipBytes": 249,
+          "sha256": "7be32a38e62ca6d6a5874581fc17e394dfadec5dcf525c7179f3349ed111593c"
+        },
+        {
+          "path": "index.html",
+          "bytes": 1026,
+          "gzipBytes": 622,
+          "sha256": "7f91e9a83f0f86269dc5e80f7bf9fe7df50c406956f50750e0732e6c06718f17"
+        },
+        {
+          "path": "manifest.webmanifest",
+          "bytes": 344,
+          "gzipBytes": 252,
+          "sha256": "ad5cc3a35ebee8e134c0cc06b685b315cf3bf58a7cb09348a3cea6f3a42af083"
+        },
+        {
+          "path": "sw.js",
+          "bytes": 2466,
+          "gzipBytes": 1043,
+          "sha256": "a28bb046aabcef68bddc4f6a8a40776c054ef0efdda68698e2632144c08597d2"
+        }
+      ],
+      "sources": {
+        "src/input.ts": "3eade51cc03afaa87f38f7aeb37eab3b9ea62cbb6255d7c18a7016d7fe927a7d",
+        "src/install-guide.ts": "af1b6bf1458be113a2f75eaa3d2bc4595873e0f2708bb9d4eaf0353bf8b5e5bc",
+        "src/levels.ts": "fe2cbd8aa77c13d24f02791ff97dd601d21937eefeee8a8fdb6cbc79e76b47b6",
+        "src/main.ts": "94771b9038c0b601ef9ec5b4ec9d4a28d667f77f594407bccfbf5b65c1606fd3",
+        "src/nature.ts": "d302830fb3bb0050603b07bc0826e63830df7172a5a519dcde883ac01bcaa155",
+        "src/offline.ts": "b0e241cc4025675791a01adf21a13c99e2d3150a965beee2a5af514c8101d154",
+        "src/physics.ts": "bbbef3ff106f18c78a56770d04efa3a6d18ba0eb354cb537dc59a4ac7c28d722",
+        "src/scene.ts": "7979cac1320b23219a6029d79841ee2651ce916daa075b0e5c413c98d144591d",
+        "src/state.ts": "dea1645cce451e29b4bb549d6cc895d65db51b0bb667bf58f4a227678aa86e0b",
+        "src/style.css": "c608eaa166f6259df4bdd971a30c521b05a0a280bd5a6d9b0e03f2c973560166",
+        "src/sw.template.js": "ed0e16c1a2c933d04aa1356d618ca9dcef7a53d2ffca7fbcf70d33ade955099e",
+        "src/tilt-permission.ts": "d7a2f3f24d19972e50dca52b8011737d977fbeee08d8efbc022b28289b4bad1e",
+        "src/tilt.ts": "79155172663187e1f8d912c9b74dda3d7646544e76c3f8e7ec2ea3137ba3e4a3",
+        "src/track.ts": "a89cca8b242b9b57ac61f6ec3b6dd9b6534e89ca6445c5bdd634e0951914f2d4"
+      },
+      "main": {
+        "path": "assets/index--hlKbZXZ.js",
+        "bytes": 590304,
+        "gzipBytes": 150413,
+        "sha256": "aed4586cc958982d1f6182c6ec455be6d01f4d136034d6ea0f6eb59b5ffeb868"
+      },
+      "tilt": {
+        "path": "assets/tilt-FZkVbzu9.js",
+        "bytes": 4924,
+        "gzipBytes": 1788,
+        "sha256": "61212787253819feca998d54343893c79e0e013aa50ec6ffc85ac872be2eb810"
+      },
+      "code": {
+        "bytes": 595228,
+        "gzipBytes": 152201
+      },
+      "cache": {
+        "count": 9,
+        "bytes": 3488371,
+        "separatelyGzippedBytes": 1262718
+      }
+    }
+  },
+  "runs": [
+    {
+      "variant": "before",
+      "condition": "cold",
+      "round": 0,
+      "prime": false,
+      "error": null,
+      "ready": 1893.3999999910593,
+      "swReady": null,
+      "lcp": null,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 108,
+      "rapierRequest": 1087.2999999970198,
+      "rapierEnd": 1175.7000000029802,
+      "offlineText": "オフライン保存が完了していません",
+      "control": "指で操作 (旧版)",
+      "controlledByServiceWorker": false,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 922,
+      "resourceTransferSize": 1237994
+    },
+    {
+      "variant": "after",
+      "condition": "cold",
+      "round": 0,
+      "prime": false,
+      "error": null,
+      "ready": 1682.5,
+      "swReady": null,
+      "lcp": 24,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 24,
+      "rapierRequest": 1070.5,
+      "rapierEnd": 1157.7999999970198,
+      "offlineText": "オフライン保存が完了していません",
+      "control": "指で操作",
+      "controlledByServiceWorker": false,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 922,
+      "resourceTransferSize": 1239421
+    },
+    {
+      "variant": "after",
+      "condition": "cold",
+      "round": 1,
+      "prime": false,
+      "error": null,
+      "ready": 1612.8999999910593,
+      "swReady": null,
+      "lcp": 1576,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 974,
+      "rapierEnd": 1070.3999999910593,
+      "offlineText": "オフライン保存が完了していません",
+      "control": "指で操作",
+      "controlledByServiceWorker": false,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 922,
+      "resourceTransferSize": 1239421
+    },
+    {
+      "variant": "before",
+      "condition": "cold",
+      "round": 1,
+      "prime": false,
+      "error": null,
+      "ready": 1590.2999999970198,
+      "swReady": null,
+      "lcp": 1556,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 24,
+      "rapierRequest": 997.5999999940395,
+      "rapierEnd": 1083.7999999970198,
+      "offlineText": "オフライン保存が完了していません",
+      "control": "指で操作 (旧版)",
+      "controlledByServiceWorker": false,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 922,
+      "resourceTransferSize": 1237994
+    },
+    {
+      "variant": "before",
+      "condition": "cold",
+      "round": 2,
+      "prime": false,
+      "error": null,
+      "ready": 1593.7000000029802,
+      "swReady": null,
+      "lcp": 1556,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 994.3999999910593,
+      "rapierEnd": 1084.3999999910593,
+      "offlineText": "オフライン保存が完了していません",
+      "control": "指で操作 (旧版)",
+      "controlledByServiceWorker": false,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 922,
+      "resourceTransferSize": 1237994
+    },
+    {
+      "variant": "after",
+      "condition": "cold",
+      "round": 2,
+      "prime": false,
+      "error": null,
+      "ready": 1571.5999999940395,
+      "swReady": null,
+      "lcp": 1536,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 972.7000000029802,
+      "rapierEnd": 1058.9000000059605,
+      "offlineText": "オフライン保存が完了していません",
+      "control": "指で操作",
+      "controlledByServiceWorker": false,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 922,
+      "resourceTransferSize": 1239421
+    },
+    {
+      "variant": "after",
+      "condition": "cold",
+      "round": 3,
+      "prime": false,
+      "error": null,
+      "ready": 1567,
+      "swReady": null,
+      "lcp": 1532,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 981,
+      "rapierEnd": 1067,
+      "offlineText": "オフライン保存が完了していません",
+      "control": "指で操作",
+      "controlledByServiceWorker": false,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 922,
+      "resourceTransferSize": 1239421
+    },
+    {
+      "variant": "before",
+      "condition": "cold",
+      "round": 3,
+      "prime": false,
+      "error": null,
+      "ready": 1594.2999999970198,
+      "swReady": null,
+      "lcp": 1556,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 1001.5999999940395,
+      "rapierEnd": 1087.5,
+      "offlineText": "オフライン保存が完了していません",
+      "control": "指で操作 (旧版)",
+      "controlledByServiceWorker": false,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 922,
+      "resourceTransferSize": 1237994
+    },
+    {
+      "variant": "before",
+      "condition": "cold",
+      "round": 4,
+      "prime": false,
+      "error": null,
+      "ready": 1598.6000000089407,
+      "swReady": null,
+      "lcp": 1560,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 981,
+      "rapierEnd": 1068.6000000089407,
+      "offlineText": "オフライン保存が完了していません",
+      "control": "指で操作 (旧版)",
+      "controlledByServiceWorker": false,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 922,
+      "resourceTransferSize": 1237994
+    },
+    {
+      "variant": "after",
+      "condition": "cold",
+      "round": 4,
+      "prime": false,
+      "error": null,
+      "ready": 2079.7000000029802,
+      "swReady": null,
+      "lcp": 2076,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 1232.5,
+      "rapierEnd": 1349.4000000059605,
+      "offlineText": "オフライン保存が完了していません",
+      "control": "指で操作",
+      "controlledByServiceWorker": false,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 922,
+      "resourceTransferSize": 1239421
+    },
+    {
+      "variant": "before",
+      "condition": "warm",
+      "round": 0,
+      "prime": false,
+      "error": null,
+      "ready": 1905.1000000089407,
+      "swReady": 1885.1000000089407,
+      "lcp": 1912,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 1227.2999999970198,
+      "rapierEnd": 1229.1000000089407,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作 (旧版)",
+      "controlledByServiceWorker": true,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 0,
+      "resourceTransferSize": 0
+    },
+    {
+      "variant": "after",
+      "condition": "warm",
+      "round": 0,
+      "prime": false,
+      "error": null,
+      "ready": 1566,
+      "swReady": 1545.9000000059605,
+      "lcp": 1560,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 1004.6000000089407,
+      "rapierEnd": 1006,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作",
+      "controlledByServiceWorker": true,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 0,
+      "resourceTransferSize": 0
+    },
+    {
+      "variant": "after",
+      "condition": "warm",
+      "round": 1,
+      "prime": false,
+      "error": null,
+      "ready": 1568.5,
+      "swReady": 1551.2000000029802,
+      "lcp": 1564,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 1006.8000000119209,
+      "rapierEnd": 1009,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作",
+      "controlledByServiceWorker": true,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 0,
+      "resourceTransferSize": 0
+    },
+    {
+      "variant": "before",
+      "condition": "warm",
+      "round": 1,
+      "prime": false,
+      "error": null,
+      "ready": 1602.7000000029802,
+      "swReady": 1584.7000000029802,
+      "lcp": 1592,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 12,
+      "rapierRequest": 1032.2000000029802,
+      "rapierEnd": 1034.1000000089407,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作 (旧版)",
+      "controlledByServiceWorker": true,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 0,
+      "resourceTransferSize": 0
+    },
+    {
+      "variant": "before",
+      "condition": "warm",
+      "round": 2,
+      "prime": false,
+      "error": null,
+      "ready": 1784.5,
+      "swReady": 1764.9000000059605,
+      "lcp": 1788,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 12,
+      "rapierRequest": 1005.6000000089407,
+      "rapierEnd": 1008.1000000089407,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作 (旧版)",
+      "controlledByServiceWorker": true,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 0,
+      "resourceTransferSize": 0
+    },
+    {
+      "variant": "after",
+      "condition": "warm",
+      "round": 2,
+      "prime": false,
+      "error": null,
+      "ready": 1632.9000000059605,
+      "swReady": 1615.2999999970198,
+      "lcp": 1628,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 1071.7999999970198,
+      "rapierEnd": 1073.6000000089407,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作",
+      "controlledByServiceWorker": true,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 0,
+      "resourceTransferSize": 0
+    },
+    {
+      "variant": "after",
+      "condition": "warm",
+      "round": 3,
+      "prime": false,
+      "error": null,
+      "ready": 1615.1000000089407,
+      "swReady": 1597,
+      "lcp": 1608,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 12,
+      "rapierRequest": 1048,
+      "rapierEnd": 1049.7999999970198,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作",
+      "controlledByServiceWorker": true,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 0,
+      "resourceTransferSize": 0
+    },
+    {
+      "variant": "before",
+      "condition": "warm",
+      "round": 3,
+      "prime": false,
+      "error": null,
+      "ready": 1618.1000000089407,
+      "swReady": 1601.2000000029802,
+      "lcp": 1520,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 12,
+      "rapierRequest": 972.6000000089407,
+      "rapierEnd": 974.2999999970198,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作 (旧版)",
+      "controlledByServiceWorker": true,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 0,
+      "resourceTransferSize": 0
+    },
+    {
+      "variant": "before",
+      "condition": "warm",
+      "round": 4,
+      "prime": false,
+      "error": null,
+      "ready": 1607.4000000059605,
+      "swReady": 1590.1000000089407,
+      "lcp": 1512,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 12,
+      "rapierRequest": 964.6000000089407,
+      "rapierEnd": 966.2000000029802,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作 (旧版)",
+      "controlledByServiceWorker": true,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 0,
+      "resourceTransferSize": 0
+    },
+    {
+      "variant": "after",
+      "condition": "warm",
+      "round": 4,
+      "prime": false,
+      "error": null,
+      "ready": 1611.5,
+      "swReady": 1044.7000000029802,
+      "lcp": 1520,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 12,
+      "rapierRequest": 965.8000000119209,
+      "rapierEnd": 967.8000000119209,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作",
+      "controlledByServiceWorker": true,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 0,
+      "resourceTransferSize": 0
+    }
+  ],
+  "primers": [
+    {
+      "variant": "before",
+      "condition": "warm",
+      "round": null,
+      "prime": true,
+      "error": null,
+      "ready": 2111.5,
+      "swReady": 2048.7999999970198,
+      "lcp": 20,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 20,
+      "rapierRequest": 1400.5,
+      "rapierEnd": 1409.7000000029802,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作 (旧版)",
+      "controlledByServiceWorker": true,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 922,
+      "resourceTransferSize": 154202
+    },
+    {
+      "variant": "after",
+      "condition": "warm",
+      "round": null,
+      "prime": true,
+      "error": null,
+      "ready": 1924.4000000059605,
+      "swReady": 1880.1000000089407,
+      "lcp": 1864,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 1263.7000000029802,
+      "rapierEnd": 1271.2000000029802,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作",
+      "controlledByServiceWorker": true,
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 922,
+      "resourceTransferSize": 155629
+    }
+  ],
+  "medians": {
+    "cold": {
+      "before": {
+        "ready": {
+          "milliseconds": 1594.2999999970198,
+          "validSamples": 5
+        },
+        "fcp": {
+          "milliseconds": 16,
+          "validSamples": 5
+        },
+        "swReady": {
+          "milliseconds": null,
+          "validSamples": 0
+        },
+        "lcp": {
+          "milliseconds": 1556,
+          "validSamples": 4
+        }
+      },
+      "after": {
+        "ready": {
+          "milliseconds": 1612.8999999910593,
+          "validSamples": 5
+        },
+        "fcp": {
+          "milliseconds": 16,
+          "validSamples": 5
+        },
+        "swReady": {
+          "milliseconds": null,
+          "validSamples": 0
+        },
+        "lcp": {
+          "milliseconds": 1536,
+          "validSamples": 5
+        }
+      }
+    },
+    "warm": {
+      "before": {
+        "ready": {
+          "milliseconds": 1618.1000000089407,
+          "validSamples": 5
+        },
+        "fcp": {
+          "milliseconds": 12,
+          "validSamples": 5
+        },
+        "swReady": {
+          "milliseconds": 1601.2000000029802,
+          "validSamples": 5
+        },
+        "lcp": {
+          "milliseconds": 1592,
+          "validSamples": 5
+        }
+      },
+      "after": {
+        "ready": {
+          "milliseconds": 1611.5,
+          "validSamples": 5
+        },
+        "fcp": {
+          "milliseconds": 16,
+          "validSamples": 5
+        },
+        "swReady": {
+          "milliseconds": 1551.2000000029802,
+          "validSamples": 5
+        },
+        "lcp": {
+          "milliseconds": 1564,
+          "validSamples": 5
+        }
+      }
+    }
+  },
+  "deltas": {
+    "mainGzipBytes": 1242,
+    "mainAndTiltGzipBytes": 3030,
+    "totalCacheBytes": 10008
+  }
+}

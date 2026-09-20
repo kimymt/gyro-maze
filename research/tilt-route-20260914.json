@@ -1,0 +1,157 @@
+{
+  "coneHalfAngleDegrees": 30,
+  "coneFullOpeningDegrees": 60,
+  "units": "game-world distance units",
+  "cases": [
+    {
+      "baseline": "identity",
+      "id": "woodland-cube",
+      "baselineGravityDirection": [
+        0,
+        -1,
+        0
+      ],
+      "routeLength": 19.186697853880414,
+      "points": 394,
+      "hardestTangentIndex": 157,
+      "hardestTangent": [
+        -0.9887331516768715,
+        0.12285354643572506,
+        0.08552052913356996
+      ],
+      "minimumGravityChangeToStartPositiveAccelerationDegrees": 7.056817632365522,
+      "totalNonDrivingLength": 0,
+      "longestNonDrivingInterval": {
+        "length": 0,
+        "startIndex": null,
+        "endIndex": null,
+        "riseAgainstBaselineGravity": 0
+      }
+    },
+    {
+      "baseline": "identity",
+      "id": "earthen-passages",
+      "baselineGravityDirection": [
+        0,
+        -1,
+        0
+      ],
+      "routeLength": 38.632077572651575,
+      "points": 786,
+      "hardestTangentIndex": 237,
+      "hardestTangent": [
+        -0.987120086951267,
+        0.12884056446246367,
+        0.09483692786207733
+      ],
+      "minimumGravityChangeToStartPositiveAccelerationDegrees": 7.402598116900037,
+      "totalNonDrivingLength": 0,
+      "longestNonDrivingInterval": {
+        "length": 0,
+        "startIndex": null,
+        "endIndex": null,
+        "riseAgainstBaselineGravity": 0
+      }
+    },
+    {
+      "baseline": "identity",
+      "id": "water-wilderness",
+      "baselineGravityDirection": [
+        0,
+        -1,
+        0
+      ],
+      "routeLength": 75.33340787936442,
+      "points": 1524,
+      "hardestTangentIndex": 1264,
+      "hardestTangent": [
+        0.03322196089491244,
+        0.9972464311600918,
+        -0.06630125830448126
+      ],
+      "minimumGravityChangeToStartPositiveAccelerationDegrees": 85.74709869101412,
+      "totalNonDrivingLength": 9.297985366144097,
+      "longestNonDrivingInterval": {
+        "length": 9.297985366144097,
+        "startIndex": 1212,
+        "endIndex": 1400,
+        "riseAgainstBaselineGravity": 7.645524658049401
+      }
+    },
+    {
+      "baseline": "reset-at-start",
+      "id": "woodland-cube",
+      "baselineGravityDirection": [
+        0.0003279892821141778,
+        -0.999999946211514,
+        0
+      ],
+      "routeLength": 19.186697853880414,
+      "points": 394,
+      "hardestTangentIndex": 157,
+      "hardestTangent": [
+        -0.9887331516768715,
+        0.12285354643572506,
+        0.08552052913356996
+      ],
+      "minimumGravityChangeToStartPositiveAccelerationDegrees": 7.0755401267644515,
+      "totalNonDrivingLength": 0,
+      "longestNonDrivingInterval": {
+        "length": 0,
+        "startIndex": null,
+        "endIndex": null,
+        "riseAgainstBaselineGravity": 0
+      }
+    },
+    {
+      "baseline": "reset-at-start",
+      "id": "earthen-passages",
+      "baselineGravityDirection": [
+        0.00040547478400840725,
+        -0.9999999177950964,
+        0
+      ],
+      "routeLength": 38.632077572651575,
+      "points": 786,
+      "hardestTangentIndex": 237,
+      "hardestTangent": [
+        -0.987120086951267,
+        0.12884056446246367,
+        0.09483692786207733
+      ],
+      "minimumGravityChangeToStartPositiveAccelerationDegrees": 7.42572362340718,
+      "totalNonDrivingLength": 0,
+      "longestNonDrivingInterval": {
+        "length": 0,
+        "startIndex": null,
+        "endIndex": null,
+        "riseAgainstBaselineGravity": 0
+      }
+    },
+    {
+      "baseline": "reset-at-start",
+      "id": "water-wilderness",
+      "baselineGravityDirection": [
+        0.0005136644646066614,
+        -0.9999998680744002,
+        0
+      ],
+      "routeLength": 75.33340787936442,
+      "points": 1524,
+      "hardestTangentIndex": 1264,
+      "hardestTangent": [
+        0.03322196089491244,
+        0.9972464311600918,
+        -0.06630125830448126
+      ],
+      "minimumGravityChangeToStartPositiveAccelerationDegrees": 85.73383319679817,
+      "totalNonDrivingLength": 9.297985366144097,
+      "longestNonDrivingInterval": {
+        "length": 9.297985366144097,
+        "startIndex": 1212,
+        "endIndex": 1400,
+        "riseAgainstBaselineGravity": 7.646883393407395
+      }
+    }
+  ]
+}

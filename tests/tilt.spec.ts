@@ -281,6 +281,6 @@ test('tilt controls fit a narrow phone and short landscape without overlapping',
   }
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await expect(page.getByRole('dialog')).toBeHidden();
-  await page.screenshot({path:`/private/tmp/gyro-tilt-tools-${viewport.width}x${viewport.height}.png`});
+  await page.screenshot({path:test.info().outputPath(`tilt-tools-${viewport.width}x${viewport.height}.png`)});
  }
 });
