@@ -1,4 +1,6 @@
 import { Quaternion, Vector3 } from 'three';
+import { levelDefinitions } from './levels';
+const recordIds=new Set([...levelDefinitions.map(level=>level.id),'water-wilderness']);
 export type Phase = 'select' | 'playing' | 'paused' | 'result';
 export function localGravity(orientation: Quaternion): Vector3 { return new Vector3(0,-9.81,0).applyQuaternion(orientation.clone().invert()); }
 export class Progress {
@@ -24,7 +26,7 @@ export function parseSave(raw: string|null): SaveData {
     if(data.quality==='low') clean.quality='low';
     for(const [key,value] of Object.entries(data.records??{})) {
       const r=value as RecordEntry;
-      if(['woodland-cube','earthen-passages','water-wilderness','water-wilderness-lowlands'].includes(key)&&r&&Number.isFinite(r.time)&&r.time>=0&&Number.isInteger(r.falls)&&r.falls>=0) clean.records[key]={time:r.time,falls:r.falls};
+      if(recordIds.has(key)&&r&&Number.isFinite(r.time)&&r.time>=0&&Number.isInteger(r.falls)&&r.falls>=0) clean.records[key]={time:r.time,falls:r.falls};
     }
   } catch { /* Corrupt or unavailable storage must not prevent play. */ } return clean;
 }

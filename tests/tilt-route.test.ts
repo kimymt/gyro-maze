@@ -1,13 +1,13 @@
 import {beforeAll,it,expect} from 'vitest';
 import {Quaternion,Vector3} from 'three';
 import {initPhysics,Physics} from '../src/physics';
-import {levels,nearestOnRoute,spawnPosition} from '../src/levels';
+import {getLevel,nearestOnRoute,spawnPosition} from '../src/levels';
 import {Progress,parseSave} from '../src/state';
 
 beforeAll(()=>initPhysics());
 
 it('the revised third stage can pass its checkpoints and stop at the goal within 25 degrees of tilt',()=>{
- const level=levels[2],physics=new Physics(level),progress=new Progress();progress.start();
+ const level=getLevel(2),physics=new Physics(level),progress=new Progress();progress.start();
  const down=new Vector3(0,-1,0),neutral=new Vector3(...level.start.up).negate();
  const maxAngle=25*Math.PI/180,maxHorizontal=Math.tan(maxAngle)*9.81;
  let maxStep=0,maxTilt=0,farthest=0;
@@ -40,11 +40,12 @@ it('the revised third stage can pass its checkpoints and stop at the goal within
 
 it('keeps old third-stage records separate from the revised course',()=>{
  const oldRecord={time:12,falls:0},newRecord={time:42,falls:0};
- expect(levels[2].id).not.toBe('water-wilderness');
+ const level=getLevel(2);
+ expect(level.id).not.toBe('water-wilderness');
  const oldOnly=parseSave(JSON.stringify({version:1,records:{'water-wilderness':oldRecord}}));
  expect(oldOnly.records['water-wilderness']).toEqual(oldRecord);
- expect(oldOnly.records[levels[2].id]).toBeUndefined();
- const both=parseSave(JSON.stringify({version:1,records:{'water-wilderness':oldRecord,[levels[2].id]:newRecord}}));
+ expect(oldOnly.records[level.id]).toBeUndefined();
+ const both=parseSave(JSON.stringify({version:1,records:{'water-wilderness':oldRecord,[level.id]:newRecord}}));
  expect(both.records['water-wilderness']).toEqual(oldRecord);
- expect(both.records[levels[2].id]).toEqual(newRecord);
+ expect(both.records[level.id]).toEqual(newRecord);
 });

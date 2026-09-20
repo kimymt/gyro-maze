@@ -1,0 +1,861 @@
+{
+  "baselineCommit": "aff2fc221465dcd2dc6f85dbf5ba774f1de7dea2",
+  "timestamp": "2026-09-20T13:50:59.835Z",
+  "environment": {
+    "node": "v26.7.0",
+    "chromium": "153.0.8010.12",
+    "platform": "darwin",
+    "osRelease": "27.0.0",
+    "cpu": "Apple M4",
+    "viewport": {
+      "width": 393,
+      "height": 852
+    }
+  },
+  "conditions": {
+    "general": "Desktop headless Chromium with SwiftShader; localhost HTTP; no CPU/network throttling; same installed dependencies; default touch mode; no input performed; five alternating runs per variant per condition. Not iPhone Safari or a real-device acceptance test.",
+    "cold": "Fresh browser context for every run; HTTP cache disabled via CDP; service workers blocked. Browser process and OS file cache are shared, so this is not a cold OS or GPU process.",
+    "warm": "One persistent context per variant; service worker/cache primed once and ready verified; five alternating revisits in a fresh page within the same context, retaining HTTP and service-worker caches. Pages close between runs so only one game renders at a time. Warm-up navigations are stored separately and excluded from medians.",
+    "metrics": "Navigation-relative milliseconds. ready is the first enabled start-button mutation, FCP comes from Paint Timing, SWready is the first app offline-ready text, LCP is the latest value after 350ms post-ready settling. Missing measurements remain null. Browser instrumentation adds small equal observer overhead.",
+    "limitations": "Localhost removes real download latency; GPU/software rendering and desktop sensor absence do not predict iPhone startup, battery, heat, or sensor operation. Runs share the machine with other development work; an apparent small difference is not proof of acceleration or regression."
+  },
+  "versionComparison": {
+    "before": "0.3.0",
+    "after": "0.4.0"
+  },
+  "interpretation": "Comparison includes the complete release changes. It does not independently attribute timing differences to lazy geometry generation. Separate catalog tests verify that importing metadata builds no geometry and requesting one stage generates only that stage; geometry-only Node measurements are recorded in stage-expansion-geometry-20260920.json.",
+  "buildsUnchanged": true,
+  "touchStartupVerified": true,
+  "warmCacheVerified": true,
+  "builds": {
+    "before": {
+      "files": [
+        {
+          "path": "_headers",
+          "bytes": 159,
+          "gzipBytes": 129,
+          "sha256": "7a7dacc9250ed1547a5bb508c60abf082d5a4cb4723d229dcf017014731f6b90"
+        },
+        {
+          "path": "assets/index-CLZg4heZ.js",
+          "bytes": 590304,
+          "gzipBytes": 150412,
+          "sha256": "af6ee22a97879ce7c3432b1e6ea6b5cbb6b6ab2600257f8b44326c2cbf2e1b57"
+        },
+        {
+          "path": "assets/index-D6OmMRPC.css",
+          "bytes": 16055,
+          "gzipBytes": 4338,
+          "sha256": "32cda2632c5467af6184d6100bf03795448330781daeebb68c6a495afafd559f"
+        },
+        {
+          "path": "assets/rapier-D0hE8_bQ.js",
+          "bytes": 2851776,
+          "gzipBytes": 1083792,
+          "sha256": "94e9de5599b23fc6df021b26c070254451b7c276cc59d3f8cc7369c48baa2e2d"
+        },
+        {
+          "path": "assets/tilt-vuGgMgZ5.js",
+          "bytes": 4924,
+          "gzipBytes": 1788,
+          "sha256": "7dcb344b2aa9d994ca6a7f0fef7ea083d370ec28f135e1f467805caaa9f90702"
+        },
+        {
+          "path": "icon-192.png",
+          "bytes": 4663,
+          "gzipBytes": 4669,
+          "sha256": "0391c30d775454f790d4edd9587c81227dd2e8bcba386f7a9b083a177eede600"
+        },
+        {
+          "path": "icon-512.png",
+          "bytes": 18986,
+          "gzipBytes": 16617,
+          "sha256": "d556815fcc99d9c17f73de25e871597164ed2fc3c44dfcc9311f1b85ca4a5f68"
+        },
+        {
+          "path": "icon.svg",
+          "bytes": 348,
+          "gzipBytes": 249,
+          "sha256": "7be32a38e62ca6d6a5874581fc17e394dfadec5dcf525c7179f3349ed111593c"
+        },
+        {
+          "path": "index.html",
+          "bytes": 1026,
+          "gzipBytes": 622,
+          "sha256": "6bad1770a01497029a5d7849f83c1c838afb864110f18bd79f7a56d06a25f2bf"
+        },
+        {
+          "path": "manifest.webmanifest",
+          "bytes": 344,
+          "gzipBytes": 252,
+          "sha256": "ad5cc3a35ebee8e134c0cc06b685b315cf3bf58a7cb09348a3cea6f3a42af083"
+        },
+        {
+          "path": "sw.js",
+          "bytes": 2466,
+          "gzipBytes": 1041,
+          "sha256": "a8e0850eedae85a08dcecd341c6c0f8fd2166e8565ba0711d22648921e319b8a"
+        }
+      ],
+      "sources": {
+        "src/input.ts": "3eade51cc03afaa87f38f7aeb37eab3b9ea62cbb6255d7c18a7016d7fe927a7d",
+        "src/install-guide.ts": "af1b6bf1458be113a2f75eaa3d2bc4595873e0f2708bb9d4eaf0353bf8b5e5bc",
+        "src/levels.ts": "fe2cbd8aa77c13d24f02791ff97dd601d21937eefeee8a8fdb6cbc79e76b47b6",
+        "src/main.ts": "94771b9038c0b601ef9ec5b4ec9d4a28d667f77f594407bccfbf5b65c1606fd3",
+        "src/nature.ts": "d302830fb3bb0050603b07bc0826e63830df7172a5a519dcde883ac01bcaa155",
+        "src/offline.ts": "b0e241cc4025675791a01adf21a13c99e2d3150a965beee2a5af514c8101d154",
+        "src/physics.ts": "bbbef3ff106f18c78a56770d04efa3a6d18ba0eb354cb537dc59a4ac7c28d722",
+        "src/scene.ts": "7979cac1320b23219a6029d79841ee2651ce916daa075b0e5c413c98d144591d",
+        "src/state.ts": "dea1645cce451e29b4bb549d6cc895d65db51b0bb667bf58f4a227678aa86e0b",
+        "src/style.css": "a8a2c9e263307f46e9d32ff4a3eeccfcbcb35c7c33ded60cdc08c1a49916366f",
+        "src/sw.template.js": "ed0e16c1a2c933d04aa1356d618ca9dcef7a53d2ffca7fbcf70d33ade955099e",
+        "src/tilt-permission.ts": "d7a2f3f24d19972e50dca52b8011737d977fbeee08d8efbc022b28289b4bad1e",
+        "src/tilt.ts": "79155172663187e1f8d912c9b74dda3d7646544e76c3f8e7ec2ea3137ba3e4a3",
+        "src/track.ts": "a89cca8b242b9b57ac61f6ec3b6dd9b6534e89ca6445c5bdd634e0951914f2d4"
+      },
+      "main": {
+        "path": "assets/index-CLZg4heZ.js",
+        "bytes": 590304,
+        "gzipBytes": 150412,
+        "sha256": "af6ee22a97879ce7c3432b1e6ea6b5cbb6b6ab2600257f8b44326c2cbf2e1b57"
+      },
+      "tilt": {
+        "path": "assets/tilt-vuGgMgZ5.js",
+        "bytes": 4924,
+        "gzipBytes": 1788,
+        "sha256": "7dcb344b2aa9d994ca6a7f0fef7ea083d370ec28f135e1f467805caaa9f90702"
+      },
+      "code": {
+        "bytes": 595228,
+        "gzipBytes": 152200
+      },
+      "cache": {
+        "count": 9,
+        "bytes": 3488426,
+        "separatelyGzippedBytes": 1262739
+      }
+    },
+    "after": {
+      "files": [
+        {
+          "path": "_headers",
+          "bytes": 159,
+          "gzipBytes": 129,
+          "sha256": "7a7dacc9250ed1547a5bb508c60abf082d5a4cb4723d229dcf017014731f6b90"
+        },
+        {
+          "path": "assets/index-Cv6d-cKP.css",
+          "bytes": 16901,
+          "gzipBytes": 4553,
+          "sha256": "b852f54ef0bbe5484240479166c4a077ee1ea6fd1af5523c206226f9d096dc70"
+        },
+        {
+          "path": "assets/index-DQcHeyFK.js",
+          "bytes": 593748,
+          "gzipBytes": 151707,
+          "sha256": "e65501628392055da4573426ca2483337ce31e7652dcd5f6ff6606a057346e0f"
+        },
+        {
+          "path": "assets/rapier-D0hE8_bQ.js",
+          "bytes": 2851776,
+          "gzipBytes": 1083792,
+          "sha256": "94e9de5599b23fc6df021b26c070254451b7c276cc59d3f8cc7369c48baa2e2d"
+        },
+        {
+          "path": "assets/tilt-CvbTLEYW.js",
+          "bytes": 4924,
+          "gzipBytes": 1786,
+          "sha256": "c57b07df3798e4826be370db939e54f3014e02c69b30ea190e6b262fa87d413c"
+        },
+        {
+          "path": "icon-192.png",
+          "bytes": 4663,
+          "gzipBytes": 4669,
+          "sha256": "0391c30d775454f790d4edd9587c81227dd2e8bcba386f7a9b083a177eede600"
+        },
+        {
+          "path": "icon-512.png",
+          "bytes": 18986,
+          "gzipBytes": 16617,
+          "sha256": "d556815fcc99d9c17f73de25e871597164ed2fc3c44dfcc9311f1b85ca4a5f68"
+        },
+        {
+          "path": "icon.svg",
+          "bytes": 348,
+          "gzipBytes": 249,
+          "sha256": "7be32a38e62ca6d6a5874581fc17e394dfadec5dcf525c7179f3349ed111593c"
+        },
+        {
+          "path": "index.html",
+          "bytes": 1026,
+          "gzipBytes": 621,
+          "sha256": "734e0559937562683e02979830d30d206fe27c200ebb96017a12dfe076b6c74f"
+        },
+        {
+          "path": "manifest.webmanifest",
+          "bytes": 344,
+          "gzipBytes": 252,
+          "sha256": "ad5cc3a35ebee8e134c0cc06b685b315cf3bf58a7cb09348a3cea6f3a42af083"
+        },
+        {
+          "path": "sw.js",
+          "bytes": 2466,
+          "gzipBytes": 1041,
+          "sha256": "e783ce10ef06e4ff2a8dc79ea52aad334987f11c95352036a9118db15e7df346"
+        }
+      ],
+      "sources": {
+        "src/input.ts": "3eade51cc03afaa87f38f7aeb37eab3b9ea62cbb6255d7c18a7016d7fe927a7d",
+        "src/install-guide.ts": "af1b6bf1458be113a2f75eaa3d2bc4595873e0f2708bb9d4eaf0353bf8b5e5bc",
+        "src/levels.ts": "ff7c20a8ed6c47127c4606eb42a182dc64d070455ba98408ccf13e78e930a3f9",
+        "src/main.ts": "781b31772c1bbff69548522898f5807944b79861820efc174996b1b264aa7cb8",
+        "src/nature.ts": "d302830fb3bb0050603b07bc0826e63830df7172a5a519dcde883ac01bcaa155",
+        "src/offline.ts": "b0e241cc4025675791a01adf21a13c99e2d3150a965beee2a5af514c8101d154",
+        "src/physics.ts": "bbbef3ff106f18c78a56770d04efa3a6d18ba0eb354cb537dc59a4ac7c28d722",
+        "src/scene.ts": "9eb716fd287a8b4185783fe9a6463685f0428a67d962ecbd24825be629cc1347",
+        "src/state.ts": "d4a1e4b94359ec57e434bf6dba95be63b17fbc07094410737a67ebb1e0a6daa9",
+        "src/style.css": "c43dfbcb8ad226276611cd0c461cb872d0baf57845d4da9641a07ac3e62ad110",
+        "src/sw.template.js": "ed0e16c1a2c933d04aa1356d618ca9dcef7a53d2ffca7fbcf70d33ade955099e",
+        "src/tilt-permission.ts": "d7a2f3f24d19972e50dca52b8011737d977fbeee08d8efbc022b28289b4bad1e",
+        "src/tilt.ts": "79155172663187e1f8d912c9b74dda3d7646544e76c3f8e7ec2ea3137ba3e4a3",
+        "src/track.ts": "a89cca8b242b9b57ac61f6ec3b6dd9b6534e89ca6445c5bdd634e0951914f2d4"
+      },
+      "main": {
+        "path": "assets/index-DQcHeyFK.js",
+        "bytes": 593748,
+        "gzipBytes": 151707,
+        "sha256": "e65501628392055da4573426ca2483337ce31e7652dcd5f6ff6606a057346e0f"
+      },
+      "tilt": {
+        "path": "assets/tilt-CvbTLEYW.js",
+        "bytes": 4924,
+        "gzipBytes": 1786,
+        "sha256": "c57b07df3798e4826be370db939e54f3014e02c69b30ea190e6b262fa87d413c"
+      },
+      "code": {
+        "bytes": 598672,
+        "gzipBytes": 153493
+      },
+      "cache": {
+        "count": 9,
+        "bytes": 3492716,
+        "separatelyGzippedBytes": 1264246
+      }
+    }
+  },
+  "runs": [
+    {
+      "variant": "before",
+      "condition": "cold",
+      "round": 0,
+      "prime": false,
+      "error": null,
+      "ready": 1899.1000000089407,
+      "swReady": null,
+      "lcp": null,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 100,
+      "rapierRequest": 1091.9000000059605,
+      "rapierEnd": 1177.5,
+      "offlineText": "オフライン保存が完了していません",
+      "control": "指で操作",
+      "controlledByServiceWorker": false,
+      "availableStages": 3,
+      "selectedStage": "01 / 03",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 922,
+      "resourceTransferSize": 1239442
+    },
+    {
+      "variant": "after",
+      "condition": "cold",
+      "round": 0,
+      "prime": false,
+      "error": null,
+      "ready": 1575.1000000089407,
+      "swReady": null,
+      "lcp": 1656,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 1017.3000000119209,
+      "rapierEnd": 1102.2000000029802,
+      "offlineText": "オフライン保存が完了していません",
+      "control": "指で操作",
+      "controlledByServiceWorker": false,
+      "availableStages": 10,
+      "selectedStage": "01 / 10",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 921,
+      "resourceTransferSize": 1240952
+    },
+    {
+      "variant": "after",
+      "condition": "cold",
+      "round": 1,
+      "prime": false,
+      "error": null,
+      "ready": 1544.7999999970198,
+      "swReady": null,
+      "lcp": 1512,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 964.7999999970198,
+      "rapierEnd": 1049.2999999970198,
+      "offlineText": "オフライン保存が完了していません",
+      "control": "指で操作",
+      "controlledByServiceWorker": false,
+      "availableStages": 10,
+      "selectedStage": "01 / 10",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 921,
+      "resourceTransferSize": 1240952
+    },
+    {
+      "variant": "before",
+      "condition": "cold",
+      "round": 1,
+      "prime": false,
+      "error": null,
+      "ready": 1569.5,
+      "swReady": null,
+      "lcp": 1536,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 981,
+      "rapierEnd": 1066.7000000029802,
+      "offlineText": "オフライン保存が完了していません",
+      "control": "指で操作",
+      "controlledByServiceWorker": false,
+      "availableStages": 3,
+      "selectedStage": "01 / 03",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 922,
+      "resourceTransferSize": 1239442
+    },
+    {
+      "variant": "before",
+      "condition": "cold",
+      "round": 2,
+      "prime": false,
+      "error": null,
+      "ready": 1569.6000000089407,
+      "swReady": null,
+      "lcp": 1536,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 979.6000000089407,
+      "rapierEnd": 1064.9000000059605,
+      "offlineText": "オフライン保存が完了していません",
+      "control": "指で操作",
+      "controlledByServiceWorker": false,
+      "availableStages": 3,
+      "selectedStage": "01 / 03",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 922,
+      "resourceTransferSize": 1239442
+    },
+    {
+      "variant": "after",
+      "condition": "cold",
+      "round": 2,
+      "prime": false,
+      "error": null,
+      "ready": 1569.2000000029802,
+      "swReady": null,
+      "lcp": 1536,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 977.7000000029802,
+      "rapierEnd": 1072.9000000059605,
+      "offlineText": "オフライン保存が完了していません",
+      "control": "指で操作",
+      "controlledByServiceWorker": false,
+      "availableStages": 10,
+      "selectedStage": "01 / 10",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 921,
+      "resourceTransferSize": 1240952
+    },
+    {
+      "variant": "after",
+      "condition": "cold",
+      "round": 3,
+      "prime": false,
+      "error": null,
+      "ready": 1576.5,
+      "swReady": null,
+      "lcp": 1544,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 994.5,
+      "rapierEnd": 1081.9000000059605,
+      "offlineText": "オフライン保存が完了していません",
+      "control": "指で操作",
+      "controlledByServiceWorker": false,
+      "availableStages": 10,
+      "selectedStage": "01 / 10",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 921,
+      "resourceTransferSize": 1240952
+    },
+    {
+      "variant": "before",
+      "condition": "cold",
+      "round": 3,
+      "prime": false,
+      "error": null,
+      "ready": 1625.7000000029802,
+      "swReady": null,
+      "lcp": 1584,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 997.3999999910593,
+      "rapierEnd": 1093.8999999910593,
+      "offlineText": "オフライン保存が完了していません",
+      "control": "指で操作",
+      "controlledByServiceWorker": false,
+      "availableStages": 3,
+      "selectedStage": "01 / 03",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 922,
+      "resourceTransferSize": 1239442
+    },
+    {
+      "variant": "before",
+      "condition": "cold",
+      "round": 4,
+      "prime": false,
+      "error": null,
+      "ready": 1568.5,
+      "swReady": null,
+      "lcp": 1532,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 977.1999999880791,
+      "rapierEnd": 1062.5,
+      "offlineText": "オフライン保存が完了していません",
+      "control": "指で操作",
+      "controlledByServiceWorker": false,
+      "availableStages": 3,
+      "selectedStage": "01 / 03",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 922,
+      "resourceTransferSize": 1239442
+    },
+    {
+      "variant": "after",
+      "condition": "cold",
+      "round": 4,
+      "prime": false,
+      "error": null,
+      "ready": 1569.1000000089407,
+      "swReady": null,
+      "lcp": 1536,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 975.1000000089407,
+      "rapierEnd": 1062.300000011921,
+      "offlineText": "オフライン保存が完了していません",
+      "control": "指で操作",
+      "controlledByServiceWorker": false,
+      "availableStages": 10,
+      "selectedStage": "01 / 10",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 921,
+      "resourceTransferSize": 1240952
+    },
+    {
+      "variant": "before",
+      "condition": "warm",
+      "round": 0,
+      "prime": false,
+      "error": null,
+      "ready": 1620.9000000059605,
+      "swReady": 1051.9000000059605,
+      "lcp": 1528,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 12,
+      "rapierRequest": 973.4000000059605,
+      "rapierEnd": 974.5999999940395,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作",
+      "controlledByServiceWorker": true,
+      "availableStages": 3,
+      "selectedStage": "01 / 03",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 0,
+      "resourceTransferSize": 0
+    },
+    {
+      "variant": "after",
+      "condition": "warm",
+      "round": 0,
+      "prime": false,
+      "error": null,
+      "ready": 1611.7999999970198,
+      "swReady": 1592.4000000059605,
+      "lcp": 1520,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 12,
+      "rapierRequest": 973.5,
+      "rapierEnd": 975.2999999970198,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作",
+      "controlledByServiceWorker": true,
+      "availableStages": 10,
+      "selectedStage": "01 / 10",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 0,
+      "resourceTransferSize": 0
+    },
+    {
+      "variant": "after",
+      "condition": "warm",
+      "round": 1,
+      "prime": false,
+      "error": null,
+      "ready": 1593.4000000059605,
+      "swReady": 1575.7999999970198,
+      "lcp": 1504,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 12,
+      "rapierRequest": 958.2000000029802,
+      "rapierEnd": 960,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作",
+      "controlledByServiceWorker": true,
+      "availableStages": 10,
+      "selectedStage": "01 / 10",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 0,
+      "resourceTransferSize": 0
+    },
+    {
+      "variant": "before",
+      "condition": "warm",
+      "round": 1,
+      "prime": false,
+      "error": null,
+      "ready": 1627.2999999970198,
+      "swReady": 1610,
+      "lcp": 1536,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 979.5999999940395,
+      "rapierEnd": 981.5,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作",
+      "controlledByServiceWorker": true,
+      "availableStages": 3,
+      "selectedStage": "01 / 03",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 0,
+      "resourceTransferSize": 0
+    },
+    {
+      "variant": "before",
+      "condition": "warm",
+      "round": 2,
+      "prime": false,
+      "error": null,
+      "ready": 1612.7000000029802,
+      "swReady": 1049.1000000089407,
+      "lcp": 1520,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 971.7999999970198,
+      "rapierEnd": 973.9000000059605,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作",
+      "controlledByServiceWorker": true,
+      "availableStages": 3,
+      "selectedStage": "01 / 03",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 0,
+      "resourceTransferSize": 0
+    },
+    {
+      "variant": "after",
+      "condition": "warm",
+      "round": 2,
+      "prime": false,
+      "error": null,
+      "ready": 1602.9000000059605,
+      "swReady": 1585.7000000029802,
+      "lcp": 1512,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 12,
+      "rapierRequest": 961.4000000059605,
+      "rapierEnd": 963.2999999970198,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作",
+      "controlledByServiceWorker": true,
+      "availableStages": 10,
+      "selectedStage": "01 / 10",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 0,
+      "resourceTransferSize": 0
+    },
+    {
+      "variant": "after",
+      "condition": "warm",
+      "round": 3,
+      "prime": false,
+      "error": null,
+      "ready": 1606,
+      "swReady": 1588.2000000029802,
+      "lcp": 1516,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 965.7999999970198,
+      "rapierEnd": 967.7000000029802,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作",
+      "controlledByServiceWorker": true,
+      "availableStages": 10,
+      "selectedStage": "01 / 10",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 0,
+      "resourceTransferSize": 0
+    },
+    {
+      "variant": "before",
+      "condition": "warm",
+      "round": 3,
+      "prime": false,
+      "error": null,
+      "ready": 1608.699999988079,
+      "swReady": 1043.5999999940395,
+      "lcp": 1516,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 12,
+      "rapierRequest": 965.2999999970198,
+      "rapierEnd": 966.8999999910593,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作",
+      "controlledByServiceWorker": true,
+      "availableStages": 3,
+      "selectedStage": "01 / 03",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 0,
+      "resourceTransferSize": 0
+    },
+    {
+      "variant": "before",
+      "condition": "warm",
+      "round": 4,
+      "prime": false,
+      "error": null,
+      "ready": 1636.7000000029802,
+      "swReady": 1619.2999999970198,
+      "lcp": 1544,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 12,
+      "rapierRequest": 991.7999999970198,
+      "rapierEnd": 993.3999999910593,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作",
+      "controlledByServiceWorker": true,
+      "availableStages": 3,
+      "selectedStage": "01 / 03",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 0,
+      "resourceTransferSize": 0
+    },
+    {
+      "variant": "after",
+      "condition": "warm",
+      "round": 4,
+      "prime": false,
+      "error": null,
+      "ready": 1589.2000000029802,
+      "swReady": 1031.6000000089407,
+      "lcp": 1500,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 12,
+      "rapierRequest": 955.1000000089407,
+      "rapierEnd": 956.9000000059605,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作",
+      "controlledByServiceWorker": true,
+      "availableStages": 10,
+      "selectedStage": "01 / 10",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 0,
+      "resourceTransferSize": 0
+    }
+  ],
+  "primers": [
+    {
+      "variant": "before",
+      "condition": "warm",
+      "round": null,
+      "prime": true,
+      "error": null,
+      "ready": 1575.300000011921,
+      "swReady": 1545.7000000029802,
+      "lcp": 1532,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 20,
+      "rapierRequest": 983.6000000089407,
+      "rapierEnd": 990,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作",
+      "controlledByServiceWorker": true,
+      "availableStages": 3,
+      "selectedStage": "01 / 03",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 922,
+      "resourceTransferSize": 155650
+    },
+    {
+      "variant": "after",
+      "condition": "warm",
+      "round": null,
+      "prime": true,
+      "error": null,
+      "ready": 1566.4000000059605,
+      "swReady": 1539.5999999940395,
+      "lcp": 1528,
+      "orientationListeners": 0,
+      "motionListeners": 0,
+      "permissionCalls": 0,
+      "fcp": 16,
+      "rapierRequest": 981.2000000029802,
+      "rapierEnd": 987.7000000029802,
+      "offlineText": "オフラインで遊べます",
+      "control": "指で操作",
+      "controlledByServiceWorker": true,
+      "availableStages": 10,
+      "selectedStage": "01 / 10",
+      "tiltPageResourceRequests": 0,
+      "navigationTransferSize": 921,
+      "resourceTransferSize": 157160
+    }
+  ],
+  "medians": {
+    "cold": {
+      "before": {
+        "ready": {
+          "milliseconds": 1569.6000000089407,
+          "validSamples": 5
+        },
+        "fcp": {
+          "milliseconds": 16,
+          "validSamples": 5
+        },
+        "swReady": {
+          "milliseconds": null,
+          "validSamples": 0
+        },
+        "lcp": {
+          "milliseconds": 1536,
+          "validSamples": 4
+        }
+      },
+      "after": {
+        "ready": {
+          "milliseconds": 1569.2000000029802,
+          "validSamples": 5
+        },
+        "fcp": {
+          "milliseconds": 16,
+          "validSamples": 5
+        },
+        "swReady": {
+          "milliseconds": null,
+          "validSamples": 0
+        },
+        "lcp": {
+          "milliseconds": 1536,
+          "validSamples": 5
+        }
+      }
+    },
+    "warm": {
+      "before": {
+        "ready": {
+          "milliseconds": 1620.9000000059605,
+          "validSamples": 5
+        },
+        "fcp": {
+          "milliseconds": 12,
+          "validSamples": 5
+        },
+        "swReady": {
+          "milliseconds": 1051.9000000059605,
+          "validSamples": 5
+        },
+        "lcp": {
+          "milliseconds": 1528,
+          "validSamples": 5
+        }
+      },
+      "after": {
+        "ready": {
+          "milliseconds": 1602.9000000059605,
+          "validSamples": 5
+        },
+        "fcp": {
+          "milliseconds": 12,
+          "validSamples": 5
+        },
+        "swReady": {
+          "milliseconds": 1585.7000000029802,
+          "validSamples": 5
+        },
+        "lcp": {
+          "milliseconds": 1512,
+          "validSamples": 5
+        }
+      }
+    }
+  },
+  "deltas": {
+    "mainGzipBytes": 1295,
+    "mainAndTiltGzipBytes": 1293,
+    "totalCacheBytes": 4290
+  }
+}

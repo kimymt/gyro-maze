@@ -1,6 +1,6 @@
 import './style.css';
 import { Vector3 } from 'three';
-import { levels, nearestOnRoute, spawnPosition, type Marker } from './levels';
+import { levelDefinitions as levels, getLevel, nearestOnRoute, spawnPosition, type Level, type Marker } from './levels';
 import { Scene } from './scene';
 import { Physics, initPhysics } from './physics';
 import { Input } from './input';
@@ -12,14 +12,15 @@ import { InstallGuide } from './install-guide';
 const icons={close:'<path d="m6 6 12 12M6 18 18 6"/>',arrow:'<path d="M5 12h14m-6-6 6 6-6 6"/>',pause:'<path d="M9 5v14M15 5v14"/>',reset:'<path d="M3 10a9 9 0 1 1 1 8M3 4v6h6"/>',help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 .5c0 1.8-2.5 2-2.5 4M12 17h.01"/>',chevron:'<path d="m9 5 7 7-7 7"/>',back:'<path d="m14 6-6 6 6 6"/>',check:'<path d="m5 12 4 4L19 6"/>',orbit:'<ellipse cx="12" cy="12" rx="10" ry="5" transform="rotate(-40 12 12)"/><circle cx="12" cy="12" r="3"/>'};
 function icon(name:keyof typeof icons){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name]}</svg>`;}
 function controlMarkup(home=false){return `<div class="control-setting"><fieldset class="control-picker"><legend>操作方法</legend><div class="control-options"><button type="button" data-control="touch" aria-pressed="true">指で操作</button><button type="button" data-control="tilt" aria-pressed="false">端末を傾ける</button></div></fieldset><p class="control-status" ${home?'id="control-status"':''} role="status" aria-live="polite"></p></div>`;}
+const levelTotal=String(levels.length).padStart(2,'0');
 const root=document.querySelector<HTMLDivElement>('#app')!;
 root.innerHTML=`<div class="shell"><header class="header"><a class="brand" href="/" aria-label="GYRO ホーム">${icon('orbit')}<span>GYRO<span class="brand-dot">.</span></span></a><button class="icon-button" data-action="help" aria-label="遊び方">${icon('help')}</button></header>
 <main class="workspace"><section class="selection" aria-label="ステージ選択"><div class="intro"><p class="intro-copy">木と土、水の中を巡る。<br>落ちる心配のない、立体迷路。</p></div><div class="level-heading"><span>ステージを選択</span></div><div class="levels">${levels.map((l,i)=>`<button class="level ${i===0?'selected':''}" data-level="${i}" aria-label="ワールド ${l.number}" aria-pressed="${i===0}"><span class="level-number">${l.number}</span><span class="level-copy"><span class="record" data-record="${l.id}"></span></span><span class="difficulty">${l.difficulty}</span>${icon('chevron')}</button>`).join('')}</div>${controlMarkup(true)}<button class="primary start" data-action="start" disabled><span id="start-label">準備しています</span>${icon('arrow')}</button></section>
-<section class="viewer" aria-label="3D迷路"><div class="viewer-grid" aria-hidden="true"></div><div class="scene-caption"><span class="mini-dot"></span><span class="scene-index" id="scene-index">01 / 03</span></div><div class="play-hud" hidden><button class="icon-button" data-action="pause" aria-label="一時停止">${icon('pause')}</button><div class="hud-title"><span id="play-number">ステージ 01</span><span class="control-label">指で操作</span></div><div class="timer" id="timer">00:00</div></div><canvas id="scene" aria-label="迷路をドラッグして回転。2本指でひねると回転、ピンチで拡大縮小。" tabindex="0"></canvas><div class="viewer-bottom"><p id="scene-description">木の外周から、森の内側へ。</p><div class="gesture-hint">${icon('orbit')}<span>ドラッグして回す</span><span class="hint-separator">/</span><span>ピンチで拡大</span></div></div><div class="play-bottom" hidden><div class="progress-row"><span id="checkpoint">スタート地点</span><span id="route-progress">道のり 0%</span></div><div class="play-tools"><button data-action="reset">${icon('reset')}視点リセット</button><button data-action="focus">球に寄る</button><button data-action="calibrate" aria-label="傾きの基準を合わせる" hidden>基準合わせ</button><button data-action="restart">再挑戦</button></div></div><div id="toast" role="status" aria-live="polite"></div></section></main>
+<section class="viewer" aria-label="3D迷路"><div class="viewer-grid" aria-hidden="true"></div><div class="scene-caption"><span class="mini-dot"></span><span class="scene-index" id="scene-index">01 / ${levelTotal}</span></div><div class="play-hud" hidden><button class="icon-button" data-action="pause" aria-label="一時停止">${icon('pause')}</button><div class="hud-title"><span id="play-number">ステージ 01</span><span class="control-label">指で操作</span></div><div class="timer" id="timer">00:00</div></div><canvas id="scene" aria-label="迷路をドラッグして回転。2本指でひねると回転、ピンチで拡大縮小。" tabindex="0"></canvas><div class="viewer-bottom"><p id="scene-description">木の外周から、森の内側へ。</p><div class="gesture-hint">${icon('orbit')}<span>ドラッグして回す</span><span class="hint-separator">/</span><span>ピンチで拡大</span></div></div><div class="play-bottom" hidden><div class="progress-row"><span id="checkpoint">スタート地点</span><span id="route-progress">道のり 0%</span></div><div class="play-tools"><button data-action="reset">${icon('reset')}視点リセット</button><button data-action="focus">球に寄る</button><button data-action="calibrate" aria-label="傾きの基準を合わせる" hidden>基準合わせ</button><button data-action="restart">再挑戦</button></div></div><div id="toast" role="status" aria-live="polite"></div></section></main>
 <aside class="install-banner" id="install-banner" aria-labelledby="install-banner-title" aria-live="polite" hidden><button class="install-dismiss" data-action="dismiss-install" aria-label="ホーム画面への追加案内を閉じる">${icon('close')}</button><h2 id="install-banner-title">オフラインで遊ぶ</h2><button class="install-link" data-action="install-guide">ホーム画面に追加する方法を見る ${icon('arrow')}</button></aside>
 <footer class="footer"><div class="offline-status"><span class="status-dot"></span><span id="offline-text">オフライン用データを確認中</span><button data-action="retry-offline" hidden>再試行</button><button data-action="update" hidden>更新する</button></div></footer></div><dialog id="dialog"></dialog>`;
 const $=<T extends HTMLElement=HTMLElement>(selector:string)=>root.querySelector<T>(selector)!;
-const progress=new Progress();let selected=0,physics:Physics|undefined,scene:Scene,input:Input,ready=false;
+const progress=new Progress();let selected=0,level:Level,physics:Physics|undefined,scene:Scene,input:Input,ready=false;
 type ControlMode='touch'|'tilt';
 let controlMode:ControlMode='touch',tilt:TiltInput|undefined,controlPending=false,controlMessage='',controlGeneration=0,gestureActive=false;
 let save;try{save=parseSave(localStorage.getItem(SAVE_KEY));}catch{save=parseSave(null);}
@@ -95,7 +96,7 @@ const offline=new Offline((state,pending)=>{offlineState=state;updatePending=pen
 void offline.init();
 let accumulator=0,last=0,frames=0,frameElapsed=0,lowSamples=0,autoLow=false;
 const previousPosition=new Vector3(),currentPosition=new Vector3();
-function currentMarker():Marker{return progress.phase==='select'||progress.checkpoint<0?levels[selected].start:levels[selected].checkpoints[progress.checkpoint];}
+function currentMarker():Marker{return progress.phase==='select'||progress.checkpoint<0?level.start:level.checkpoints[progress.checkpoint];}
 function resetBall(){
   if(!physics)return;const m=currentMarker();physics.reset(m);scene.orientation.setFromUnitVectors(new Vector3(...m.up),new Vector3(0,1,0));scene.zoom=1;scene.updateCamera();input.clear();tilt?.recalibrate();accumulator=0;
   currentPosition.copy(physics.ball.translation());previousPosition.copy(currentPosition);progress.goalDwell=0;scene.needsRender=true;
@@ -107,13 +108,13 @@ function syncMode(){
   offlineUI();requestAnimationFrame(()=>scene?.resize());
 }
 function select(index:number){
-  stopTilt();controlMessage='';controlUI();selected=index;physics?.dispose();physics=undefined;scene.load(levels[index]);
+  stopTilt();controlMessage='';controlUI();selected=index;level=getLevel(index);physics?.dispose();physics=undefined;scene.load(level);
   accumulator=0;
-  if(ready){physics=new Physics(levels[index]);currentPosition.copy(physics.ball.translation());previousPosition.copy(currentPosition);}
+  if(ready){physics=new Physics(level);currentPosition.copy(physics.ball.translation());previousPosition.copy(currentPosition);}
   for(const button of root.querySelectorAll<HTMLButtonElement>('[data-level]')){const active=Number(button.dataset.level)===index;button.classList.toggle('selected',active);button.setAttribute('aria-pressed',String(active));}
-  $('#scene-index').textContent=`${levels[index].number} / 03`;$('#scene-description').textContent=levels[index].description;
+  $('#scene-index').textContent=`${level.number} / ${levelTotal}`;$('#scene-description').textContent=level.description;
 }
-function start(){if(!ready||controlPending)return;stopTilt();controlMessage='';dialog.close();physics?.dispose();physics=new Physics(levels[selected]);progress.start();scene.orientation.identity();resetBall();syncMode();$('#play-number').textContent=`ステージ ${levels[selected].number}`;$('#scene').focus();toast(controlMode==='tilt'?'今の持ち方を基準に、端末を傾けて操作':'少しずつ傾けて、球を転がそう');if(controlMode==='tilt')void startTilt();controlUI();}
+function start(){if(!ready||controlPending)return;stopTilt();controlMessage='';dialog.close();physics?.dispose();physics=new Physics(level);progress.start();scene.orientation.identity();resetBall();syncMode();$('#play-number').textContent=`ステージ ${level.number}`;$('#scene').focus();toast(controlMode==='tilt'?'今の持ち方を基準に、端末を傾けて操作':'少しずつ傾けて、球を転がそう');if(controlMode==='tilt')void startTilt();controlUI();}
 function showDialog(html:string,view:'help'|'install'|'fatal'|'other'='other'){
   stopTilt();input?.clear();
   dialog.dataset.view=view;
@@ -127,9 +128,9 @@ function renderPause(){
 function resume(){dialog.close();controlMessage='';progress.resume();input.clear();accumulator=0;last=performance.now();$('#scene').focus();if(controlMode==='tilt')void startTilt();controlUI();}
 function finish(){
   stopTilt();
-  const r={time:progress.elapsed,falls:progress.falls};const previous=saved.records[levels[selected].id];const best=!previous||r.time<previous.time;
-  if(best)saved.records[levels[selected].id]=r;persist();updateRecords();input.clear();
-  showDialog(`<p class="eyebrow">${best?'自己ベスト更新':'ステージクリア'}</p><div class="result-symbol">${icon('check')}</div><h2>たどり着いた。</h2><p>ステージ ${levels[selected].number}</p><div class="result-stats"><div><strong>${formatTime(r.time)}</strong><span>クリアタイム</span></div><div><strong>${Math.round(levels[selected].routeLength)}</strong><span>道のり</span></div></div>${selected<levels.length-1?`<button class="primary" data-action="next">次の世界へ ${icon('arrow')}</button>`:''}<button class="secondary" data-action="restart">もう一度遊ぶ</button><button class="text-button" data-action="select">ステージ選択へ</button>`);
+  const r={time:progress.elapsed,falls:progress.falls};const previous=saved.records[level.id];const best=!previous||r.time<previous.time;
+  if(best)saved.records[level.id]=r;persist();updateRecords();input.clear();
+  showDialog(`<p class="eyebrow">${best?'自己ベスト更新':'ステージクリア'}</p><div class="result-symbol">${icon('check')}</div><h2>たどり着いた。</h2><p>ステージ ${level.number}</p><div class="result-stats"><div><strong>${formatTime(r.time)}</strong><span>クリアタイム</span></div><div><strong>${Math.round(level.routeLength)}</strong><span>道のり</span></div></div>${selected<levels.length-1?`<button class="primary" data-action="next">次の世界へ ${icon('arrow')}</button>`:''}<button class="secondary" data-action="restart">もう一度遊ぶ</button><button class="text-button" data-action="select">ステージ選択へ</button>`);
 }
 let helpWasPlaying=false;
 function help(){stopTilt();helpWasPlaying=progress.phase==='playing';if(helpWasPlaying)progress.pause();input?.clear();renderHelp();}
@@ -156,7 +157,7 @@ root.addEventListener('click',e=>{
     case 'resume':resume();break;
     case 'select':dialog.close();progress.phase='select';input.clear();select(selected);syncMode();$('[data-action="start"]').focus();break;
     case 'next':select(selected+1);start();break;
-    case 'focus':scene.setZoom(scene.zoom>1.5?1/scene.zoom:2.2/scene.zoom);break;
+    case 'focus':scene.setZoom(scene.zoom>1.5?1/scene.zoom:scene.focusZoom/scene.zoom);break;
     case 'calibrate':tilt?.recalibrate();input.clear();toast('この持ち方を基準にしました');break;
     case 'reset':resetBall();toast('中継点の姿勢に戻しました');break;
     case 'help':help();break;
@@ -190,17 +191,17 @@ function frame(time:number){
       accumulator-=1/120;
       // Preview uses the same physics, without checkpoints, time, or records.
       if(progress.phase==='playing'){
-        const cp=levels[selected].checkpoints[progress.checkpoint+1];
-        if(cp&&currentPosition.distanceTo(spawnPosition(cp))<levels[selected].corridorRadius+.22){progress.checkpoint++;toast('中継点を通過しました');}
+        const cp=level.checkpoints[progress.checkpoint+1];
+        if(cp&&currentPosition.distanceTo(spawnPosition(cp))<level.corridorRadius+.22){progress.checkpoint++;toast('中継点を通過しました');}
         const vel=physics.ball.linvel(),speed=Math.hypot(vel.x,vel.y,vel.z);
-        const allCheckpoints=progress.checkpoint===levels[selected].checkpoints.length-1;
-        if(progress.tick(1/120,allCheckpoints&&currentPosition.distanceTo(spawnPosition(levels[selected].goal))<levels[selected].corridorRadius+.22,speed))finish();
+        const allCheckpoints=progress.checkpoint===level.checkpoints.length-1;
+        if(progress.tick(1/120,allCheckpoints&&currentPosition.distanceTo(spawnPosition(level.goal))<level.corridorRadius+.22,speed))finish();
       }
     }
     if(progress.phase==='playing'){
       $('#timer').textContent=formatTime(progress.elapsed);
-      const location=nearestOnRoute(currentPosition,levels[selected].route);$('#route-progress').textContent=`道のり ${Math.round(100*(location.index+location.t)/(levels[selected].route.length-1))}%`;
-      $('#checkpoint').textContent=progress.checkpoint<0?'スタート地点':`中継点 ${progress.checkpoint+1} / ${levels[selected].checkpoints.length}`;
+      const location=nearestOnRoute(currentPosition,level.route);$('#route-progress').textContent=`道のり ${Math.round(100*(location.index+location.t)/(level.route.length-1))}%`;
+      $('#checkpoint').textContent=progress.checkpoint<0?'スタート地点':`中継点 ${progress.checkpoint+1} / ${level.checkpoints.length}`;
     }
     frames++;frameElapsed+=dt;
     if(frameElapsed>=3){
@@ -211,7 +212,7 @@ function frame(time:number){
   }
   if(!scene.needsRender&&(!simulating()||physics?.ball.isSleeping()))return;
   if(physics)scene.draw(previousPosition.clone().lerp(currentPosition,Math.min(accumulator*120,1)),physics.ball.rotation());
-  else scene.draw(spawnPosition(levels[selected].start));
+  else scene.draw(spawnPosition(level.start));
 }
 async function boot(){
   try{
@@ -221,7 +222,7 @@ async function boot(){
     input=new Input(canvas,()=>ready&&!controlPending&&!dialog.open&&(progress.phase==='playing'||progress.phase==='select'),q=>scene.rotate(q),r=>scene.setZoom(r),{start:()=>{gestureActive=true;tilt?.recalibrate();},end:()=>{tilt?.recalibrate();gestureActive=false;}});
     requestAnimationFrame(frame);
     const physicsResult=await physicsReady;if(!physicsResult.ok)throw physicsResult.error;
-    physics=new Physics(levels[selected]);currentPosition.copy(physics.ball.translation());previousPosition.copy(currentPosition);
+    physics=new Physics(level);currentPosition.copy(physics.ball.translation());previousPosition.copy(currentPosition);
     ready=true;scene.needsRender=true;$('.start').removeAttribute('disabled');$('#start-label').textContent='この世界で遊ぶ';controlUI();installUI();
   }catch(error){console.error(error);$('#start-label').textContent='読み込めませんでした';toast('再読み込みしてお試しください');showDialog('<h2>ゲームを開けませんでした。</h2><p>通信状態とブラウザの3D描画対応を確認し、再読み込みしてください。</p><button class="primary" data-action="reload">再読み込み</button>','fatal');}
 }

@@ -1,0 +1,318 @@
+{
+  "date": "2026-09-20",
+  "baselineCommit": "aff2fc221465dcd2dc6f85dbf5ba774f1de7dea2",
+  "environment": {
+    "runtime": "v26.7.0",
+    "platform": "darwin",
+    "architecture": "arm64",
+    "scope": "Node geometry generation only; excludes browser rendering, GPU resources, physics initialization and real iPhone performance."
+  },
+  "method": "5 sequential trials; each trial imports a fresh module instance with an empty geometry cache, then generates stages 01-10 once each. Shared engine/JIT may warm during later trials. Existing stages compared by SHA-256 of JSON-serialized route, blocks, start, checkpoints and goal.",
+  "preservedStages": [
+    {
+      "number": "01",
+      "id": "woodland-cube",
+      "fields": {
+        "route": {
+          "baselineSha256": "b62a2c40bcc8a4745df7d6513eae99f4a0a61fa983b90acae439cd4bc2a84be9",
+          "currentSha256": "b62a2c40bcc8a4745df7d6513eae99f4a0a61fa983b90acae439cd4bc2a84be9",
+          "equal": true
+        },
+        "blocks": {
+          "baselineSha256": "5bb6afc3c9865bed601e64871d3e8a4dc3e4e8c46b43d7759ad2a81ab3b3f3ef",
+          "currentSha256": "5bb6afc3c9865bed601e64871d3e8a4dc3e4e8c46b43d7759ad2a81ab3b3f3ef",
+          "equal": true
+        },
+        "start": {
+          "baselineSha256": "cdafa1d61befb122ecbe10811dfb3e9c11f4779795fd383628e892cbe789cdf8",
+          "currentSha256": "cdafa1d61befb122ecbe10811dfb3e9c11f4779795fd383628e892cbe789cdf8",
+          "equal": true
+        },
+        "checkpoints": {
+          "baselineSha256": "9972ca57205701aabab04452a342767f98aba28229dc3ecfdfe51ad0481396e9",
+          "currentSha256": "9972ca57205701aabab04452a342767f98aba28229dc3ecfdfe51ad0481396e9",
+          "equal": true
+        },
+        "goal": {
+          "baselineSha256": "11fb157e2b130e73783c7604186decfec9da94e3a927ec6a81b8d01ac4c928a2",
+          "currentSha256": "11fb157e2b130e73783c7604186decfec9da94e3a927ec6a81b8d01ac4c928a2",
+          "equal": true
+        }
+      }
+    },
+    {
+      "number": "02",
+      "id": "earthen-passages",
+      "fields": {
+        "route": {
+          "baselineSha256": "8e0f4620683f63fe63334fdb668e4a60a76de4c1267c489b2f3c99f0b6cfbcc9",
+          "currentSha256": "8e0f4620683f63fe63334fdb668e4a60a76de4c1267c489b2f3c99f0b6cfbcc9",
+          "equal": true
+        },
+        "blocks": {
+          "baselineSha256": "81f9db10ece6e1be37b001652c0b6ad2c05b4fda8dd1ddd88b42dd44d748d045",
+          "currentSha256": "81f9db10ece6e1be37b001652c0b6ad2c05b4fda8dd1ddd88b42dd44d748d045",
+          "equal": true
+        },
+        "start": {
+          "baselineSha256": "03357ffffac0464c17f4ed522d9ae4a19ab5aee8388edca30e7073358fe3fd04",
+          "currentSha256": "03357ffffac0464c17f4ed522d9ae4a19ab5aee8388edca30e7073358fe3fd04",
+          "equal": true
+        },
+        "checkpoints": {
+          "baselineSha256": "61a9bf8af5460ef4e50e9a261b963912099451f9bd2fbd1e72ef217f8b7a772b",
+          "currentSha256": "61a9bf8af5460ef4e50e9a261b963912099451f9bd2fbd1e72ef217f8b7a772b",
+          "equal": true
+        },
+        "goal": {
+          "baselineSha256": "01d86a3e9a1a509b2ac672bc47d1b2a4f7dffa49c315514ed00c11865ead85a4",
+          "currentSha256": "01d86a3e9a1a509b2ac672bc47d1b2a4f7dffa49c315514ed00c11865ead85a4",
+          "equal": true
+        }
+      }
+    },
+    {
+      "number": "03",
+      "id": "water-wilderness-lowlands",
+      "fields": {
+        "route": {
+          "baselineSha256": "15d03dc4cd2869e03cecf7d585c87707621368b49c0911213976a9831a67827e",
+          "currentSha256": "15d03dc4cd2869e03cecf7d585c87707621368b49c0911213976a9831a67827e",
+          "equal": true
+        },
+        "blocks": {
+          "baselineSha256": "451b7dd88a3d67e504d60068d3776e3f694c15a0b8ab5a84afabafdbfe286abe",
+          "currentSha256": "451b7dd88a3d67e504d60068d3776e3f694c15a0b8ab5a84afabafdbfe286abe",
+          "equal": true
+        },
+        "start": {
+          "baselineSha256": "11d257d7d682e170d6f630c6cf98dc4f95729f4411f58eba0301cc3d70bfcd5e",
+          "currentSha256": "11d257d7d682e170d6f630c6cf98dc4f95729f4411f58eba0301cc3d70bfcd5e",
+          "equal": true
+        },
+        "checkpoints": {
+          "baselineSha256": "6fd763e0e97495f235d5fa165eceaccbe3e5ed66e613d5867b5387e4b45790e4",
+          "currentSha256": "6fd763e0e97495f235d5fa165eceaccbe3e5ed66e613d5867b5387e4b45790e4",
+          "equal": true
+        },
+        "goal": {
+          "baselineSha256": "24aef171fce9485ef1c8a8cf64880440845a81d78024dd005daccd9e075c5b88",
+          "currentSha256": "24aef171fce9485ef1c8a8cf64880440845a81d78024dd005daccd9e075c5b88",
+          "equal": true
+        }
+      }
+    }
+  ],
+  "stages": [
+    {
+      "number": "01",
+      "id": "woodland-cube",
+      "halfSize": 2.2,
+      "routeLength": 19.186697853880414,
+      "routeSamples": 394,
+      "terrainBlocks": 37,
+      "maxSampleGap": 0.0499704956910094,
+      "maxUphillDegrees": 7.056817632365532,
+      "generationMs": {
+        "runs": [
+          2.3193330000000003,
+          2.9027499999999975,
+          2.158457999999996,
+          2.3040000000000305,
+          2.0954169999999976
+        ],
+        "median": 2.3040000000000305,
+        "max": 2.9027499999999975
+      }
+    },
+    {
+      "number": "02",
+      "id": "earthen-passages",
+      "halfSize": 3.6,
+      "routeLength": 38.632077572651575,
+      "routeSamples": 786,
+      "terrainBlocks": 189,
+      "maxSampleGap": 0.05010726608078004,
+      "maxUphillDegrees": 7.402598116900028,
+      "generationMs": {
+        "runs": [
+          2.8099579999999946,
+          3.1197090000000003,
+          4.468500000000006,
+          2.3643749999999955,
+          2.194917000000032
+        ],
+        "median": 2.8099579999999946,
+        "max": 4.468500000000006
+      }
+    },
+    {
+      "number": "03",
+      "id": "water-wilderness-lowlands",
+      "halfSize": 5.4,
+      "routeLength": 65.26108851234083,
+      "routeSamples": 1322,
+      "terrainBlocks": 508,
+      "maxSampleGap": 0.05049293391762396,
+      "maxUphillDegrees": 7.612233805491883,
+      "generationMs": {
+        "runs": [
+          5.785207999999997,
+          7.4323750000000075,
+          8.784958999999958,
+          5.958375000000046,
+          7.409708000000023
+        ],
+        "median": 7.409708000000023,
+        "max": 8.784958999999958
+      }
+    },
+    {
+      "number": "04",
+      "id": "fern-hollows",
+      "halfSize": 6.6,
+      "routeLength": 80.3642395483815,
+      "routeSamples": 1625,
+      "terrainBlocks": 538,
+      "maxSampleGap": 0.050399204652203634,
+      "maxUphillDegrees": 6.744854221881518,
+      "generationMs": {
+        "runs": [
+          7.815124999999995,
+          7.676749999999998,
+          7.446416999999997,
+          9.955083000000002,
+          7.380499999999984
+        ],
+        "median": 7.676749999999998,
+        "max": 9.955083000000002
+      }
+    },
+    {
+      "number": "05",
+      "id": "cedar-terraces",
+      "halfSize": 8,
+      "routeLength": 96.75217723286198,
+      "routeSamples": 1953,
+      "terrainBlocks": 553,
+      "maxSampleGap": 0.05016112412851719,
+      "maxUphillDegrees": 6.676408334790461,
+      "generationMs": {
+        "runs": [
+          7.999541999999991,
+          8.016208000000006,
+          7.380875000000003,
+          7.325167000000022,
+          8.779584
+        ],
+        "median": 7.999541999999991,
+        "max": 8.779584
+      }
+    },
+    {
+      "number": "06",
+      "id": "river-canyon",
+      "halfSize": 9.6,
+      "routeLength": 113.00530889408685,
+      "routeSamples": 2278,
+      "terrainBlocks": 567,
+      "maxSampleGap": 0.05000315698706452,
+      "maxUphillDegrees": 6.651829083964712,
+      "generationMs": {
+        "runs": [
+          9.523583000000002,
+          9.985874999999993,
+          11.984167000000014,
+          9.704834000000005,
+          11.182541999999899
+        ],
+        "median": 9.985874999999993,
+        "max": 11.984167000000014
+      }
+    },
+    {
+      "number": "07",
+      "id": "basalt-garden",
+      "halfSize": 11.4,
+      "routeLength": 135.49857503258573,
+      "routeSamples": 2727,
+      "terrainBlocks": 580,
+      "maxSampleGap": 0.050233226117362605,
+      "maxUphillDegrees": 6.503875517993501,
+      "generationMs": {
+        "runs": [
+          11.774417,
+          10.301582999999965,
+          13.129083999999978,
+          9.95233300000001,
+          10.412583999999924
+        ],
+        "median": 10.412583999999924,
+        "max": 13.129083999999978
+      }
+    },
+    {
+      "number": "08",
+      "id": "emerald-caverns",
+      "halfSize": 13.4,
+      "routeLength": 163.43080121989715,
+      "routeSamples": 3286,
+      "terrainBlocks": 599,
+      "maxSampleGap": 0.050333014098258196,
+      "maxUphillDegrees": 6.3002836479050615,
+      "generationMs": {
+        "runs": [
+          14.196708000000001,
+          12.851084000000014,
+          17.259333999999967,
+          13.405291999999974,
+          13.309583999999973
+        ],
+        "median": 13.405291999999974,
+        "max": 17.259333999999967
+      }
+    },
+    {
+      "number": "09",
+      "id": "tidal-highlands",
+      "halfSize": 15.6,
+      "routeLength": 179.9799905239851,
+      "routeSamples": 3617,
+      "terrainBlocks": 603,
+      "maxSampleGap": 0.05009674908950343,
+      "maxUphillDegrees": 6.458896575792358,
+      "generationMs": {
+        "runs": [
+          14.073750000000018,
+          13.671541999999988,
+          13.521082999999976,
+          13.885541999999987,
+          13.815124999999966
+        ],
+        "median": 13.815124999999966,
+        "max": 14.073750000000018
+      }
+    },
+    {
+      "number": "10",
+      "id": "ancient-wilderness",
+      "halfSize": 18,
+      "routeLength": 214.83236650018847,
+      "routeSamples": 4314,
+      "terrainBlocks": 610,
+      "maxSampleGap": 0.050263969554930135,
+      "maxUphillDegrees": 6.493916845709485,
+      "generationMs": {
+        "runs": [
+          16.775499999999994,
+          16.986125000000015,
+          16.943375000000003,
+          18.13220899999999,
+          17.151791000000003
+        ],
+        "median": 16.986125000000015,
+        "max": 18.13220899999999
+      }
+    }
+  ]
+}

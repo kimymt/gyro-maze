@@ -71,7 +71,9 @@ export class Scene {
     }
     this.addMarker(level.start,0xddd9ac,.29);for(const m of level.checkpoints)this.addMarker(m,0xf5c767,.3);this.addMarker(level.goal,0xd6fa8a,.46);
     this.content.add(this.ball);this.orientation.identity();this.zoom=1;
-    Object.assign(this.shadowLight.shadow.camera,{left:-this.radius,right:this.radius,top:this.radius,bottom:-this.radius,near:.1,far:60});this.shadowLight.shadow.camera.updateProjectionMatrix();this.resize();
+    const lightDistance=level.halfSize<=5.4?Math.hypot(8,15,10):Math.max(Math.hypot(8,15,10),this.radius*1.5+2);
+    this.shadowLight.position.set(-8,15,10).setLength(lightDistance);
+    Object.assign(this.shadowLight.shadow.camera,{left:-this.radius,right:this.radius,top:this.radius,bottom:-this.radius,near:.1,far:Math.max(60,lightDistance+this.radius+2)});this.shadowLight.shadow.camera.updateProjectionMatrix();this.resize();
   }
   private addMarker(marker:Marker,color:number,radius:number){
     const mat=new T.MeshBasicMaterial({color,toneMapped:false,side:T.DoubleSide});
@@ -79,7 +81,8 @@ export class Scene {
     const ring=new T.Mesh(geo,mat);ring.position.set(...marker.position).addScaledVector(new T.Vector3(...marker.up),.04);ring.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),new T.Vector3(...marker.up));this.content.add(ring);
   }
   rotate(delta:T.Quaternion){this.needsRender=true;const q=this.camera.quaternion.clone().multiply(delta).multiply(this.camera.quaternion.clone().invert());this.orientation.premultiply(q).normalize();}
-  setZoom(ratio:number){this.zoom=T.MathUtils.clamp(this.zoom*ratio,.75,3.2);this.updateCamera();}
+  get focusZoom(){return this.halfSize<=5.4?2.2:this.halfSize/2.2;}
+  setZoom(ratio:number){this.zoom=T.MathUtils.clamp(this.zoom*ratio,.75,this.halfSize<=5.4?3.2:this.focusZoom*1.6);this.updateCamera();}
   draw(position:{x:number;y:number;z:number},rotation?:{x:number;y:number;z:number;w:number}){
     this.pivot.quaternion.copy(this.orientation);this.ball.position.copy(position);if(rotation)this.ball.quaternion.copy(rotation);this.scene.updateMatrixWorld(true);
     if(this.zoom>1)this.updateCamera();

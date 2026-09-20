@@ -1,6 +1,6 @@
 import {afterEach, beforeAll, expect, it, vi} from 'vitest';
 import {PerspectiveCamera, Quaternion, Vector3} from 'three';
-import {levels, nearestOnRoute, routeFrame, spawnPosition} from '../src/levels';
+import {getLevel, levelDefinitions, nearestOnRoute, routeFrame, spawnPosition} from '../src/levels';
 import {initPhysics, Physics} from '../src/physics';
 import {Scene} from '../src/scene';
 import {localGravity, Progress} from '../src/state';
@@ -19,7 +19,7 @@ function headlessScene() {
 }
 
 function reachableCommands(levelIndex: number, beta: number) {
-  const level = levels[levelIndex], camera = headlessScene().camera.quaternion.clone(), inverseCamera = camera.clone().invert();
+  const level = getLevel(levelIndex), camera = headlessScene().camera.quaternion.clone(), inverseCamera = camera.clone().invert();
   const base = new Quaternion().setFromUnitVectors(new Vector3(...level.start.up), new Vector3(0, 1, 0));
   const neutral = orientationGravity(beta, 0);
   const commands: {beta: number; gamma: number; gravity: Vector3}[] = [];
@@ -35,7 +35,8 @@ function reachableCommands(levelIndex: number, beta: number) {
   return {commands, base};
 }
 
-it.each([{levelIndex: 0, beta: 45}, {levelIndex: 1, beta: 45}, ...[30, 45, 60].map(beta => ({levelIndex: 2, beta}))])('actual camera-space input can drive stage index $levelIndex from a beta $beta-degree holding position', async ({levelIndex, beta}) => {
+const holdingPositions = levelDefinitions.flatMap((_, levelIndex) => (levelIndex === 2 ? [30, 45, 60] : [45]).map(beta => ({levelIndex, beta})));
+it.each(holdingPositions)('actual camera-space input can drive stage index $levelIndex from a beta $beta-degree holding position', async ({levelIndex, beta}) => {
   vi.useFakeTimers({toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval']});
   const sensorWindow = Object.assign(new EventTarget(), {performance, screen: {orientation: Object.assign(new EventTarget(), {angle: 0})}});
   vi.stubGlobal('window', sensorWindow);
@@ -44,21 +45,29 @@ it.each([{levelIndex: 0, beta: 45}, {levelIndex: 1, beta: 45}, ...[30, 45, 60].m
   const emit = (b: number, gamma: number) => sensorWindow.dispatchEvent(Object.assign(new Event('deviceorientation'), {beta: b, gamma, alpha: null}));
   const starting = input.start(); emit(beta, 0); await starting;
   const {commands, base} = reachableCommands(levelIndex, beta);
-  const level = levels[levelIndex], physics = new Physics(level), progress = new Progress(); progress.start();
+  const level = getLevel(levelIndex), physics = new Physics(level), progress = new Progress(); progress.start();
   const scene = headlessScene(); scene.orientation.copy(base);
   const pose = scene.orientation, neutral = localGravity(base).normalize();
   let farthest = 0, maxStep = 0, maxAngle = 0, maxFloorError = 0, maxSpeed = 0;
   try {
     // Every sampled path tangent has a strictly forward sensor-reachable gravity.
     // This is a constructive check, not an assertion that all headings are reachable.
-    const minimumForwardGravity = Math.min(...level.route.map(node => Math.max(...commands.map(command => command.gravity.dot(new Vector3(...node.tangent))))));
+    const minimumForwardGravity = Math.min(...level.route.map(node => {
+      const tangent = new Vector3(...node.tangent);
+      return Math.max(...commands.map(command => command.gravity.dot(tangent)));
+    }));
     expect(minimumForwardGravity).toBeGreaterThan(.02);
-    for (let frame = 0; frame < 60 * 180 && progress.phase === 'playing'; frame++) {
+    // Larger worlds need longer traversal time; the physical speed, contact, and
+    // angle limits below stay identical to those used for the original courses.
+    const maximumSeconds = Math.max(180, level.routeLength * 4);
+    for (let frame = 0; frame < 60 * maximumSeconds && progress.phase === 'playing'; frame++) {
       const position = new Vector3().copy(physics.ball.translation()), velocity = new Vector3().copy(physics.ball.linvel());
       const nearest = nearestOnRoute(position, level.route);
       const distance = level.route[nearest.index].distance + (level.route[nearest.index + 1].distance - level.route[nearest.index].distance) * nearest.t;
       farthest = Math.max(farthest, distance);
-      const target = level.route.find(node => node.distance >= distance + .8) ?? level.route.at(-1)!;
+      let targetIndex = nearest.index;
+      while (targetIndex < level.route.length - 1 && level.route[targetIndex].distance < distance + .8) targetIndex++;
+      const target = level.route[targetIndex];
       const command = new Vector3(...target.position).sub(position).multiplyScalar(8).addScaledVector(velocity, -4);
       command.addScaledVector(neutral, -command.dot(neutral)).clampLength(0, Math.tan(25 * RAD) * 9.81);
       const desired = neutral.clone().multiplyScalar(9.81).add(command).normalize();
@@ -94,4 +103,4 @@ it.each([{levelIndex: 0, beta: 45}, {levelIndex: 1, beta: 45}, ...[30, 45, 60].m
     expect(maxAngle).toBeLessThanOrEqual(28 * RAD + 1e-8);
     expect(problem).not.toHaveBeenCalled();
   } finally { input.stop(); physics.dispose(); }
-}, 30000);
+}, 60000);

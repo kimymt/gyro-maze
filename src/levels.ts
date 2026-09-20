@@ -4,10 +4,13 @@ export type NatureMaterial = 'wood' | 'soil' | 'moss' | 'stone' | 'water';
 export interface Block { position: V3; size: V3; rotation: [number, number, number, number]; material: NatureMaterial; terrain: boolean }
 export interface Marker { position: V3; up: V3 }
 export interface PathPoint { position: V3; up: V3; tangent: V3; distance: number }
-export interface Level {
+export interface LevelDefinition {
   id: string; number: string; name: string; subtitle: string; description: string;
-  difficulty: string; materialLabel: string; blocks: Block[]; start: Marker;
-  checkpoints: Marker[]; goal: Marker; center: V3; halfSize: number;
+  difficulty: string; materialLabel: string; halfSize: number; theme: NatureMaterial;
+}
+export interface Level extends LevelDefinition {
+  blocks: Block[]; start: Marker;
+  checkpoints: Marker[]; goal: Marker; center: V3;
   route: PathPoint[]; corridorRadius: number; routeLength: number; trackMaterial: NatureMaterial;
 }
 export const BALL_RADIUS = .23;
@@ -40,9 +43,9 @@ export function routeFrame(route:PathPoint[],index:number,t:number){
   return {tangent,up,side:new Vector3().crossVectors(up,tangent).normalize()};
 }
 interface Guide { p:V3; up:V3 }
-function smoothRoute(guides:Guide[]):PathPoint[]{
+function smoothRoute(guides:Guide[],arcLengthDivisions=Math.max(1000,guides.length*200)):PathPoint[]{
   const curve=new CatmullRomCurve3(guides.map(n=>v(n.p)),false,'centripetal');
-  curve.arcLengthDivisions=Math.max(1000,guides.length*200);curve.updateArcLengths();
+  curve.arcLengthDivisions=arcLengthDivisions;curve.updateArcLengths();
   const count=Math.ceil(curve.getLength()/.05);
   const samples=Array.from({length:count+1},(_,i)=>({t:curve.getUtoTmapping(i/count,0),guide:-1}));
   // Include exact face anchors alongside evenly spaced samples.
@@ -86,27 +89,28 @@ function smoothRoute(guides:Guide[]):PathPoint[]{
   });
   return route;
 }
-function makeLevel(index:number,halfSize:number,guides:Guide[],theme:NatureMaterial):Level {
-  const route=smoothRoute(guides),count=route.length-1;
+function makeLevel(index:number,definition:LevelDefinition,guides:Guide[]):Level {
+  const {halfSize,theme}=definition;
+  // Large worlds need a denser arc-length lookup to retain the same .05 floor spacing.
+  const route=smoothRoute(guides,index>=3?Math.ceil(halfSize*1000):undefined),count=route.length-1;
   const corridorRadius=.62;
   const blocks:Block[]=[];
   // Terrain is visual only. Carve continuous tunnels before merging the voxels.
   // Physics uses the route surfaces and an invisible, seamless corridor boundary.
-  const cells=[5,7,9][index],unit=2*halfSize/cells;
+  const cells=Math.min(5+index*2,9),unit=2*halfSize/cells;
   for(let x=0;x<cells;x++)for(let y=0;y<cells;y++)for(let z=0;z<cells;z++){
     const p:V3=[-halfSize+(x+.5)*unit,-halfSize+(y+.5)*unit,-halfSize+(z+.5)*unit];
     const d=Math.sqrt(nearestOnRoute(v(p),route).distanceSquared);
     if(d<corridorRadius+BALL_RADIUS+unit*.87)continue;
     let material:NatureMaterial=theme==='wood'?'wood':y>cells*.65?'soil':'stone';
+    if(index>=3&&theme==='moss'&&y>=cells-3)material='moss';
     if(y===cells-1)material='moss';
     if(theme==='water'&&y===cells-1&&x>=cells*.5&&z<=cells*.5)material='water';
     blocks.push({position:p,size:[unit*.985,unit*.985,unit*.985],rotation:[0,0,0,1],material,terrain:true});
   }
-  const names=['木漏れ日の箱庭','土の中の回廊','水を抱く大地'];
-  const subtitles=['WOODLAND CUBE','EARTHEN PASSAGES','WATER WILDERNESS'];
-  const descriptions=['木の外周から、森の内側へ。','土の層をくぐり、反対側の景色へ。','大きな大地の外と内を、ゆっくり巡る。'];
-  const markerIndices=index===0?[Math.floor(count*.42)]:[Math.floor(count*.32),Math.floor(count*.68)];
-  return {id:['woodland-cube','earthen-passages','water-wilderness-lowlands'][index],number:String(index+1).padStart(2,'0'),name:names[index],subtitle:subtitles[index],description:descriptions[index],difficulty:['小さな森','広い回廊','大きな大地'][index],materialLabel:['WOOD / MOSS','EARTH / ROOTS','WATER / STONE'][index],blocks,start:marker(route[0]),checkpoints:markerIndices.map(i=>marker(route[i])),goal:marker(route.at(-1)!),center:[0,0,0],halfSize,route,corridorRadius,routeLength:route.at(-1)!.distance,trackMaterial:theme};
+  const markerFractions=index===0?[.42]:index<3?[.32,.68]:[.25,.5,.75];
+  const markerIndices=markerFractions.map(fraction=>Math.floor(count*fraction));
+  return {...definition,blocks,start:marker(route[0]),checkpoints:markerIndices.map(i=>marker(route[i])),goal:marker(route.at(-1)!),center:[0,0,0],route,corridorRadius,routeLength:route.at(-1)!.distance,trackMaterial:theme};
 }
 function guides(h:number,index:number):Guide[]{
   const e=h+.65;
@@ -130,4 +134,54 @@ function guides(h:number,index:number):Guide[]{
   }
   return nodes;
 }
-export const levels:Level[]=[2.2,3.6,5.4].map((h,i)=>makeLevel(i,h,guides(h,i),(['wood','soil','water'] as const)[i]));
+// Menus read only this catalog. Geometry is generated when a world is selected.
+export const levelDefinitions:readonly LevelDefinition[]=[
+  {id:'woodland-cube',number:'01',name:'木漏れ日の箱庭',subtitle:'WOODLAND CUBE',description:'木の外周から、森の内側へ。',difficulty:'小さな森',materialLabel:'WOOD / MOSS',halfSize:2.2,theme:'wood'},
+  {id:'earthen-passages',number:'02',name:'土の中の回廊',subtitle:'EARTHEN PASSAGES',description:'土の層をくぐり、反対側の景色へ。',difficulty:'広い回廊',materialLabel:'EARTH / ROOTS',halfSize:3.6,theme:'soil'},
+  {id:'water-wilderness-lowlands',number:'03',name:'水を抱く大地',subtitle:'WATER WILDERNESS',description:'大きな大地の外と内を、ゆっくり巡る。',difficulty:'大きな大地',materialLabel:'WATER / STONE',halfSize:5.4,theme:'water'},
+  {id:'fern-hollows',number:'04',name:'シダの洞',subtitle:'FERN HOLLOWS',description:'苔の斜面を下り、曲がりくねる洞を抜ける。',difficulty:'苔の洞',materialLabel:'MOSS / EARTH',halfSize:6.6,theme:'moss'},
+  {id:'cedar-terraces',number:'05',name:'杉の段丘',subtitle:'CEDAR TERRACES',description:'木の段丘を回り、長い土のトンネルへ。',difficulty:'木の段丘',materialLabel:'WOOD / MOSS',halfSize:8,theme:'wood'},
+  {id:'river-canyon',number:'06',name:'川の峡谷',subtitle:'RIVER CANYON',description:'水を抱く崖から、対岸の回廊へ下る。',difficulty:'水の峡谷',materialLabel:'WATER / STONE',halfSize:9.6,theme:'water'},
+  {id:'basalt-garden',number:'07',name:'玄武岩の庭',subtitle:'BASALT GARDEN',description:'岩の外周と、深い地層の間を進む。',difficulty:'岩の庭',materialLabel:'STONE / MOSS',halfSize:11.4,theme:'stone'},
+  {id:'emerald-caverns',number:'08',name:'緑の大洞窟',subtitle:'EMERALD CAVERNS',description:'広い苔の台地から、幾つもの曲がり角へ。',difficulty:'緑の大洞窟',materialLabel:'MOSS / STONE',halfSize:13.4,theme:'moss'},
+  {id:'tidal-highlands',number:'09',name:'水辺の高原',subtitle:'TIDAL HIGHLANDS',description:'水辺の高原を巡り、大地の奥へ潜る。',difficulty:'水辺の高原',materialLabel:'WATER / EARTH',halfSize:15.6,theme:'water'},
+  {id:'ancient-wilderness',number:'10',name:'原生の大地',subtitle:'ANCIENT WILDERNESS',description:'最も広い大地の外と内を、端から端へ。',difficulty:'原生の大地',materialLabel:'EARTH / STONE',halfSize:18,theme:'soil'},
+];
+
+interface CourseShape { top:number; entry:number; inner:number; exit:number; lower:number; rotation:number }
+const courseShapes:CourseShape[]=[
+  {top:.52,entry:.22,inner:-.3,exit:.58,lower:-.4,rotation:0},
+  {top:.25,entry:-.04,inner:-.46,exit:.44,lower:-.22,rotation:1},
+  {top:.62,entry:.36,inner:-.13,exit:.68,lower:-.5,rotation:2},
+  {top:.4,entry:.08,inner:-.4,exit:.48,lower:-.3,rotation:3},
+  {top:.64,entry:.25,inner:-.5,exit:.66,lower:-.22,rotation:1},
+  {top:.32,entry:.02,inner:-.26,exit:.5,lower:-.46,rotation:2},
+  {top:.56,entry:.3,inner:-.42,exit:.62,lower:-.34,rotation:3},
+];
+function expandedGuides(h:number,index:number):Guide[]{
+  const shape=courseShapes[index-3],e=h+.65;
+  const g=(x:number,y:number,z:number,up:V3=[0,1,0]):Guide=>({p:[x,y,z],up});
+  const nodes=[
+    g(-h*.76,e,h*shape.top),g(h*.05,e,h*shape.top),g(h*.58,e,h*(shape.top-.12)),
+    g(e,h*.6,h*shape.entry,[1,0,0]),g(e,h*.04,h*shape.entry,[1,0,0]),
+    g(h*.48,h*.01,h*shape.entry),g(h*.02,-h*.12,h*(shape.inner+.14)),g(-h*.52,-h*.23,h*shape.inner),
+    g(-e,-h*.25,h*shape.inner,[-1,0,0]),g(-e,-h*.43,h*shape.exit,[-1,0,0]),
+    g(-h*.55,-h*.46,e,[0,0,1]),g(h*.45,-h*.46,e,[0,0,1]),
+    g(h*.4,-h*.55,h*.42),g(-h*.04,-h*.59,h*shape.lower),g(h*.52,-h*.62,-e,[0,0,-1]),
+    g(e,-h*.64,-h*.56,[1,0,0]),g(e,-h*.71,-h*.1,[1,0,0]),g(e,-h*.71,h*.35),
+  ];
+  // Quarter turns preserve downward progress and offer different entry views.
+  const turn=(p:V3):V3=>{let [x,y,z]=p;for(let n=0;n<shape.rotation;n++)[x,z]=[z,-x];return [x,y,z];};
+  return nodes.map(node=>({p:turn(node.p),up:turn(node.up)}));
+}
+
+const cache=new Map<number,Level>();
+export function getLevel(index:number):Level {
+  if(!Number.isInteger(index)||index<0||index>=levelDefinitions.length)throw new RangeError('Unknown stage index');
+  let level=cache.get(index);
+  if(!level){const definition=levelDefinitions[index];level=makeLevel(index,definition,index<3?guides(definition.halfSize,index):expandedGuides(definition.halfSize,index));cache.set(index,level);}
+  return level;
+}
+// Compatibility for physics consumers: enumeration is lazy until an item is read.
+export const levels:Level[]=new Array(levelDefinitions.length);
+levelDefinitions.forEach((_,index)=>Object.defineProperty(levels,index,{enumerable:true,get:()=>getLevel(index)}));

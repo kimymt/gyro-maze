@@ -1,9 +1,10 @@
 import {beforeAll,it,expect} from 'vitest';
 import {Vector3,Quaternion} from 'three';
 import {initPhysics,Physics} from '../src/physics';
-import {levels,nearestOnRoute,routeFrame,spawnPosition} from '../src/levels';
+import {getLevel,levelDefinitions,nearestOnRoute,routeFrame,spawnPosition} from '../src/levels';
 beforeAll(()=>initPhysics());
-for(const level of levels)it(`${level.id}: outside and interior route can be completed with gravity alone`,()=>{
+for(const [index,definition] of levelDefinitions.entries())it(`${definition.id}: outside and interior route can be completed with gravity alone`,()=>{
+ const level=getLevel(index);
  const physics=new Physics(level);let checkpoint=0,maxStep=0;
  try{
   for(let waypoint=1;waypoint<level.route.length;waypoint++){
@@ -25,8 +26,9 @@ for(const level of levels)it(`${level.id}: outside and interior route can be com
   expect(maxStep,'no position snap while crossing a face').toBeLessThan(.08);
   expect(new Vector3().copy(physics.ball.translation()).distanceTo(spawnPosition(level.goal))).toBeLessThan(level.corridorRadius+.22);
  }finally{physics.dispose();}
-});
-for(const level of levels)it(`${level.id}: arbitrary rotations cannot eject the ball`,()=>{
+},30000);
+for(const [index,definition] of levelDefinitions.entries())it(`${definition.id}: arbitrary rotations cannot eject the ball`,()=>{
+ const level=getLevel(index);
  const physics=new Physics(level);let seed=9;
  const random=()=>{seed=(1664525*seed+1013904223)>>>0;return seed/4294967296;};
  try{
@@ -40,10 +42,10 @@ for(const level of levels)it(`${level.id}: arbitrary rotations cannot eject the 
    }
   }
  }finally{physics.dispose();}
-});
+},30000);
 it('worlds become larger and longer, and every route visits both the outside and the inside',()=>{
- for(let i=0;i<levels.length;i++){
-  const level=levels[i];if(i){expect(level.halfSize).toBeGreaterThan(levels[i-1].halfSize);expect(level.routeLength).toBeGreaterThan(levels[i-1].routeLength);}
+ for(let i=0;i<levelDefinitions.length;i++){
+  const level=getLevel(i);if(i){expect(level.halfSize).toBeGreaterThan(getLevel(i-1).halfSize);expect(level.routeLength).toBeGreaterThan(getLevel(i-1).routeLength);}
   expect(level.route.some(n=>Math.max(...n.position.map(Math.abs))>level.halfSize)).toBe(true);
   expect(level.route.some(n=>Math.max(...n.position.map(Math.abs))<level.halfSize*.65)).toBe(true);
  }
