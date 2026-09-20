@@ -2,9 +2,9 @@ import { Quaternion, Vector3 } from 'three';
 export class Input {
   private points = new Map<number,{x:number;y:number}>();
   private abort = new AbortController();
-  constructor(private canvas: HTMLCanvasElement, private enabled:()=>boolean, private rotate:(q:Quaternion)=>void,private zoom:(ratio:number)=>void) {
+  constructor(private canvas: HTMLCanvasElement, private enabled:()=>boolean, private rotate:(q:Quaternion)=>void,private zoom:(ratio:number)=>void,private gesture?:{start:()=>void;end:()=>void}) {
     const options={signal:this.abort.signal};
-    canvas.addEventListener('pointerdown',e=>{if(!enabled())return;canvas.setPointerCapture(e.pointerId);this.points.set(e.pointerId,{x:e.clientX,y:e.clientY});},options);
+    canvas.addEventListener('pointerdown',e=>{if(!enabled())return;if(!this.points.size)this.gesture?.start();canvas.setPointerCapture(e.pointerId);this.points.set(e.pointerId,{x:e.clientX,y:e.clientY});},options);
     canvas.addEventListener('pointermove',e=>{
       const previous=this.points.get(e.pointerId);if(!previous||!enabled())return;
       const before=[...this.points.values()];this.points.set(e.pointerId,{x:e.clientX,y:e.clientY});
@@ -22,14 +22,14 @@ export class Input {
         if(distance(before)>10&&distance(after)>10)this.zoom(distance(after)/distance(before));
       }
     },options);
-    for(const event of ['pointerup','pointercancel','lostpointercapture']) canvas.addEventListener(event,(event)=>{this.points.delete((event as PointerEvent).pointerId);},options);
-    canvas.addEventListener('wheel',e=>{if(!enabled())return;e.preventDefault();this.zoom(Math.exp(-e.deltaY*.001));},{...options,passive:false});
+    for(const event of ['pointerup','pointercancel','lostpointercapture']) canvas.addEventListener(event,(event)=>{const removed=this.points.delete((event as PointerEvent).pointerId);if(removed&&!this.points.size)this.gesture?.end();},options);
+    canvas.addEventListener('wheel',e=>{if(!enabled())return;e.preventDefault();const standalone=!this.points.size;if(standalone)this.gesture?.start();this.zoom(Math.exp(-e.deltaY*.001));if(standalone)this.gesture?.end();},{...options,passive:false});
     window.addEventListener('keydown',e=>{
       if(!enabled()||(e.target instanceof HTMLElement&&['BUTTON','SELECT','INPUT'].includes(e.target.tagName)))return;
       const axes:Record<string,Vector3>={ArrowUp:new Vector3(-1,0,0),ArrowDown:new Vector3(1,0,0),ArrowLeft:new Vector3(0,-1,0),ArrowRight:new Vector3(0,1,0),q:new Vector3(0,0,1),e:new Vector3(0,0,-1)};
-      if(axes[e.key]){e.preventDefault();this.rotate(new Quaternion().setFromAxisAngle(axes[e.key],.06));}
+      if(axes[e.key]){e.preventDefault();const standalone=!this.points.size;if(standalone)this.gesture?.start();this.rotate(new Quaternion().setFromAxisAngle(axes[e.key],.06));if(standalone)this.gesture?.end();}
     },options);
   }
-  clear(){this.points.clear();}
+  clear(){const active=this.points.size>0;this.points.clear();if(active)this.gesture?.end();}
   dispose(){this.abort.abort();this.points.clear();}
 }

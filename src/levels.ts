@@ -106,7 +106,7 @@ function makeLevel(index:number,halfSize:number,guides:Guide[],theme:NatureMater
   const subtitles=['WOODLAND CUBE','EARTHEN PASSAGES','WATER WILDERNESS'];
   const descriptions=['木の外周から、森の内側へ。','土の層をくぐり、反対側の景色へ。','大きな大地の外と内を、ゆっくり巡る。'];
   const markerIndices=index===0?[Math.floor(count*.42)]:[Math.floor(count*.32),Math.floor(count*.68)];
-  return {id:['woodland-cube','earthen-passages','water-wilderness'][index],number:String(index+1).padStart(2,'0'),name:names[index],subtitle:subtitles[index],description:descriptions[index],difficulty:['小さな森','広い回廊','大きな大地'][index],materialLabel:['WOOD / MOSS','EARTH / ROOTS','WATER / STONE'][index],blocks,start:marker(route[0]),checkpoints:markerIndices.map(i=>marker(route[i])),goal:marker(route.at(-1)!),center:[0,0,0],halfSize,route,corridorRadius,routeLength:route.at(-1)!.distance,trackMaterial:theme};
+  return {id:['woodland-cube','earthen-passages','water-wilderness-lowlands'][index],number:String(index+1).padStart(2,'0'),name:names[index],subtitle:subtitles[index],description:descriptions[index],difficulty:['小さな森','広い回廊','大きな大地'][index],materialLabel:['WOOD / MOSS','EARTH / ROOTS','WATER / STONE'][index],blocks,start:marker(route[0]),checkpoints:markerIndices.map(i=>marker(route[i])),goal:marker(route.at(-1)!),center:[0,0,0],halfSize,route,corridorRadius,routeLength:route.at(-1)!.distance,trackMaterial:theme};
 }
 function guides(h:number,index:number):Guide[]{
   const e=h+.65;
@@ -124,7 +124,9 @@ function guides(h:number,index:number):Guide[]{
     nodes.push(g([h*.45,-h*.55,h*.45]),g([h*.15,-h*.6,-h*.4]),g([h*.55,-h*.6,-e],[0,0,-1]));
   }
   if(index===2){
-    nodes.push(g([e,-h*.25,-h*.55],[1,0,0]),g([e,h*.45,-h*.55],[1,0,0]),g([h*.45,e,-h*.55]),g([-h*.55,e,-h*.55]));
+    // Finish on a low, level ledge rather than climbing back to the top.
+    // The right-side exit stays clear of both tunnels and gently levels its floor.
+    nodes.push(g([e,-h*.6,-h*.55],[1,0,0]),g([e,-h*.65,-h*.1],[1,0,0]),g([e,-h*.65,h*.35]));
   }
   return nodes;
 }

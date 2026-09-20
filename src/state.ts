@@ -24,7 +24,7 @@ export function parseSave(raw: string|null): SaveData {
     if(data.quality==='low') clean.quality='low';
     for(const [key,value] of Object.entries(data.records??{})) {
       const r=value as RecordEntry;
-      if(['woodland-cube','earthen-passages','water-wilderness'].includes(key)&&r&&Number.isFinite(r.time)&&r.time>=0&&Number.isInteger(r.falls)&&r.falls>=0) clean.records[key]={time:r.time,falls:r.falls};
+      if(['woodland-cube','earthen-passages','water-wilderness','water-wilderness-lowlands'].includes(key)&&r&&Number.isFinite(r.time)&&r.time>=0&&Number.isInteger(r.falls)&&r.falls>=0) clean.records[key]={time:r.time,falls:r.falls};
     }
   } catch { /* Corrupt or unavailable storage must not prevent play. */ } return clean;
 }

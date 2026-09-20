@@ -102,3 +102,18 @@ dialog>p:not(.eyebrow),.help-steps p,.install-steps li{font-size:16px;line-heigh
   .is-playing .header{height:calc(52px + var(--safe-top))}
   .is-playing #toast{top:10px;max-width:calc(100% - 280px);padding:10px 14px}
 }
+
+/* Input choice stays in the selection flow and pauses with the game. */
+.control-setting{margin-top:18px;min-width:0}
+.control-picker{border:0;padding:0;margin:0;min-width:0}
+.control-picker legend{padding:0;margin-bottom:8px;font-size:12px;color:var(--muted)}
+.control-options{display:flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.control-options button{flex:1;min-width:44px;min-height:44px;padding:8px 6px;font-size:14px;line-height:1.5}
+.control-options button+button{border-left:1px solid var(--line)}
+.control-options button[aria-pressed=true]{background:var(--selected-start);color:var(--accent);font-weight:600}
+.control-status{font-size:14px;line-height:1.6;color:var(--muted);margin-top:8px}
+.control-status:empty{display:none}
+.hud-title .control-label{font-size:12px;color:var(--muted);letter-spacing:0}
+.play-tools button{white-space:nowrap;padding-inline:0}
+@media(max-width:980px){.control-setting{order:4;flex-shrink:0;margin-top:14px}.start{order:5}}
+@media(max-width:380px){.play-tools{gap:4px}.play-tools button{font-size:12px;gap:4px}}
