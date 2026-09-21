@@ -130,7 +130,7 @@ function finish(){
   stopTilt();
   const r={time:progress.elapsed,falls:progress.falls};const previous=saved.records[level.id];const best=!previous||r.time<previous.time;
   if(best)saved.records[level.id]=r;persist();updateRecords();input.clear();
-  showDialog(`<p class="eyebrow">${best?'自己ベスト更新':'ステージクリア'}</p><div class="result-symbol">${icon('check')}</div><h2>たどり着いた。</h2><p>ステージ ${level.number}</p><div class="result-stats"><div><strong>${formatTime(r.time)}</strong><span>クリアタイム</span></div><div><strong>${Math.round(level.routeLength)}</strong><span>道のり</span></div></div>${selected<levels.length-1?`<button class="primary" data-action="next">次の世界へ ${icon('arrow')}</button>`:''}<button class="secondary" data-action="restart">もう一度遊ぶ</button><button class="text-button" data-action="select">ステージ選択へ</button>`);
+  showDialog(`<p class="eyebrow">${best?'自己ベスト更新':'ステージクリア'}</p><div class="result-symbol">${icon('check')}</div><h2>たどり着いた。</h2><p>ステージ ${level.number}</p><div class="result-stats"><div><strong>${formatTime(r.time)}</strong><span>クリアタイム</span></div></div>${selected<levels.length-1?`<button class="primary" data-action="next">次の世界へ ${icon('arrow')}</button>`:''}<button class="secondary" data-action="restart">もう一度遊ぶ</button><button class="text-button" data-action="select">ステージ選択へ</button>`);
 }
 let helpWasPlaying=false;
 function help(){stopTilt();helpWasPlaying=progress.phase==='playing';if(helpWasPlaying)progress.pause();input?.clear();renderHelp();}
