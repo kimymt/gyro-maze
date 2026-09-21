@@ -92,7 +92,7 @@ function smoothRoute(guides:Guide[],arcLengthDivisions=Math.max(1000,guides.leng
 function makeLevel(index:number,definition:LevelDefinition,guides:Guide[]):Level {
   const {halfSize,theme}=definition;
   // Large worlds need a denser arc-length lookup to retain the same .05 floor spacing.
-  const route=smoothRoute(guides,index>=3?Math.ceil(halfSize*1000):undefined),count=route.length-1;
+  const route=smoothRoute(guides,index>=3?Math.ceil(halfSize*(index>=10?2500:1000)):undefined),count=route.length-1;
   const corridorRadius=.62;
   const blocks:Block[]=[];
   // Terrain is visual only. Carve continuous tunnels before merging the voxels.
@@ -147,6 +147,8 @@ export const levelDefinitions:readonly LevelDefinition[]=[
   {id:'emerald-caverns-v2',number:'08',name:'二重アーチ',subtitle:'TWIN ARCHES',description:'二つの岩窓をくぐり、道の上と下を巡る。',difficulty:'二重アーチ',materialLabel:'MOSS / STONE',halfSize:13.4,theme:'moss'},
   {id:'tidal-highlands-v2',number:'09',name:'水辺の島',subtitle:'TIDAL ISLANDS',description:'四つの島を渡り、外岸から地中へ潜る。',difficulty:'水辺の島',materialLabel:'WATER / EARTH',halfSize:15.6,theme:'water'},
   {id:'ancient-wilderness-v2',number:'10',name:'三層の大地',subtitle:'LAYERED WILDERNESS',description:'三層に重なる道を渡り、中庭の奥へ。',difficulty:'三層迷路',materialLabel:'EARTH / STONE',halfSize:18,theme:'soil'},
+  {id:'root-labyrinth',number:'11',name:'巨木の根道',subtitle:'ROOT LABYRINTH',description:'広がる根の間を、外周から幹の奥へ巡る。',difficulty:'巨木の根道',materialLabel:'WOOD / MOSS',halfSize:21,theme:'wood'},
+  {id:'ridge-crossings',number:'12',name:'峰を渡る道',subtitle:'RIDGE CROSSINGS',description:'四つの峰を斜めにつなぎ、谷底の水辺へ下る。',difficulty:'峰を渡る道',materialLabel:'WATER / STONE',halfSize:24,theme:'water'},
 ];
 
 // Each world has a different massing, not just a recolored, rotated cube.
@@ -160,6 +162,8 @@ function terrainAt(index:number,[x,y,z]:V3):boolean {
     case 8:return y<-.55||(Math.abs(x)>.2&&Math.abs(z)>.2); // Four islands on one base.
     case 9:return !(Math.abs(x)<.58&&Math.abs(z)<.58&&y>-.6)
       &&!(Math.abs(x)<.2&&y<-.05&&y>-.5); // Tiered courtyard with an open lower gate.
+    case 10:return y<-.65||Math.hypot(x,z)<.3||(y<.25&&(Math.abs(x)<.18||Math.abs(z)<.18||Math.abs(x-z)<.2)); // Trunk and spreading roots.
+    case 11:return y<-.72||(Math.abs(x)>.42&&Math.abs(z)>.42&&y<1-.3*(x+z)); // Four staggered peaks.
     default:return true;
   }
 }
@@ -205,6 +209,23 @@ function expandedGuides(h:number,index:number):Guide[]{
         if(floor<2){nodes.push(g(e*sign,y-.15,.55*sign,[sign,0,0]),g(e*sign,y-.4,-.55*sign,[sign,0,0]));}
       }
       return [...nodes,g(e,-.72,.6,[1,0,0]),g(e,-.88,-.15),g(e,-.88,-.55),g(e,-.88,-.85)];
+    }
+    case 10: { // Four descending rosettes alternate root tips and inner passages.
+      const nodes:Guide[]=[g(-.8,e,.8),g(-.8,e,.3)];
+      for(let i=0;i<36;i++){
+        const angle=Math.PI+i*Math.PI/4,r=i%2===0?1.04:.38;
+        nodes.push(g(Math.cos(angle)*r,e-(i+1)*(e+.78)/36,Math.sin(angle)*r));
+      }
+      return [...nodes,g(.15,-.85,.1),g(.5,-.88,.1),g(.85,-.88,.1)];
+    }
+    case 11: { // Descending diagonal crossings connect four peaks across an open valley.
+      const nodes:Guide[]=[];
+      for(let deck=0;deck<3;deck++){
+        const y=e-deck*.65,sign=deck%2?-1:1;
+        for(const [i,[x,z]] of [[-.85,-.85],[.8,.65],[.85,-.7],[-.7,.85],[-.85,.35],[.55,-.85]].entries())
+          nodes.push(g(x*sign,y-i*.025,z*sign));
+      }
+      return [...nodes,g(e,-.7,-.5),g(e,-.86,.1),g(.65,-.88,.4),g(.2,-.88,.4),g(-.25,-.88,.4)];
     }
     default:throw new RangeError('Unknown expanded course');
   }

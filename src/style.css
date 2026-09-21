@@ -133,3 +133,12 @@ dialog>p:not(.eyebrow),.help-steps p,.install-steps li{font-size:16px;line-heigh
 .play-hud::before,.play-bottom::before{content:"";position:absolute;z-index:-1;pointer-events:none}
 .play-hud::before{inset:-24px -10px -16px;background:linear-gradient(to top,transparent,var(--hud-bg) 16px)}
 .play-bottom::before{inset:-16px -10px -14px;background:linear-gradient(to bottom,transparent,var(--hud-bg) 16px)}
+
+.locked .level-number::after{content:"・解放";font-size:11px;color:var(--muted);margin-left:4px}
+.payment-field{display:grid;gap:8px;margin:18px 0;font-size:14px}
+.payment-field input{width:100%;min-width:0;padding:12px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:inherit;font:inherit;font-size:16px}
+.payment-qr{display:block;max-width:100%;height:auto;margin:16px auto;background:white}
+.payment-wallet{display:flex;text-decoration:none;justify-content:center}
+[data-payment-status]{font-size:14px;line-height:1.6;overflow-wrap:anywhere}
+[data-payment-status]:empty{display:none}
+dialog .help-note{overflow-wrap:anywhere}

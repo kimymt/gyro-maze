@@ -1,4 +1,5 @@
 import './style.css';
+import { Access } from './access';
 import { Vector3 } from 'three';
 import { levelDefinitions as levels, getLevel, nearestOnRoute, spawnPosition, type Level, type Marker } from './levels';
 import { Scene } from './scene';
@@ -20,6 +21,7 @@ root.innerHTML=`<div class="shell"><header class="header"><a class="brand" href=
 <aside class="install-banner" id="install-banner" aria-labelledby="install-banner-title" aria-live="polite" hidden><button class="install-dismiss" data-action="dismiss-install" aria-label="ホーム画面への追加案内を閉じる">${icon('close')}</button><h2 id="install-banner-title">オフラインで遊ぶ</h2><button class="install-link" data-action="install-guide">ホーム画面に追加する方法を見る ${icon('arrow')}</button></aside>
 <footer class="footer"><div class="offline-status"><span class="status-dot"></span><span id="offline-text">オフライン用データを確認中</span><button data-action="retry-offline" hidden>再試行</button><button data-action="update" hidden>更新する</button></div></footer></div><dialog id="dialog"></dialog>`;
 const $=<T extends HTMLElement=HTMLElement>(selector:string)=>root.querySelector<T>(selector)!;
+const access=new Access();
 const progress=new Progress();let selected=0,level:Level,physics:Physics|undefined,scene:Scene,input:Input,ready=false;
 type ControlMode='touch'|'tilt';
 let controlMode:ControlMode='touch',tilt:TiltInput|undefined,controlPending=false,controlMessage='',controlGeneration=0,gestureActive=false;
@@ -114,9 +116,30 @@ function select(index:number){
   for(const button of root.querySelectorAll<HTMLButtonElement>('[data-level]')){const active=Number(button.dataset.level)===index;button.classList.toggle('selected',active);button.setAttribute('aria-pressed',String(active));}
   $('#scene-index').textContent=`${level.number} / ${levelTotal}`;$('#scene-description').textContent=level.description;
 }
-function start(){if(!ready||controlPending)return;stopTilt();controlMessage='';dialog.close();physics?.dispose();physics=new Physics(level);progress.start();scene.orientation.identity();resetBall();syncMode();$('#play-number').textContent=`ステージ ${level.number}`;$('#scene').focus();toast(controlMode==='tilt'?'今の持ち方を基準に、端末を傾けて操作':'少しずつ傾けて、球を転がそう');if(controlMode==='tilt')void startTilt();controlUI();}
+function start(){if(!ready||controlPending)return;if(!access.canPlay(selected)){void unlock();return;}stopTilt();controlMessage='';dialog.close();physics?.dispose();physics=new Physics(level);progress.start();scene.orientation.identity();resetBall();syncMode();$('#play-number').textContent=`ステージ ${level.number}`;$('#scene').focus();toast(controlMode==='tilt'?'今の持ち方を基準に、端末を傾けて操作':'少しずつ傾けて、球を転がそう');if(controlMode==='tilt')void startTilt();controlUI();}
+let dialogGeneration=0;
+async function unlock(){
+  stopTilt();input?.clear();progress.phase='select';syncMode();
+  showDialog('<h2>解放方法を読み込んでいます</h2>');
+  const generation=dialogGeneration;
+  try{const {openUnlock}=await import('./unlock');
+    if(!dialog.open||generation!==dialogGeneration)return;
+    openUnlock(dialog,html=>showDialog(html),method=>{
+      const stored=access.grant(method);updateAccess();
+      toast(stored?'07〜12で遊べます。':'07〜12で遊べます。この端末では保存できないため、今回は開いている間だけ有効です。');
+    });
+  }catch{if(generation!==dialogGeneration||!dialog.open)return;showDialog('<h2>解放方法を読み込めませんでした</h2><p>通信状態を確認してください。</p><button class="text-button" data-action="select">閉じる</button>');}
+}
+function updateAccess(){
+  for(const button of root.querySelectorAll<HTMLButtonElement>('[data-level]')){
+    const index=Number(button.dataset.level),locked=!access.canPlay(index);
+    button.classList.toggle('locked',locked);
+    button.setAttribute('aria-label',`ワールド ${levels[index].number}${locked?'・解放が必要':''}`);
+  }
+}
+updateAccess();
 function showDialog(html:string,view:'help'|'install'|'fatal'|'other'='other'){
-  stopTilt();input?.clear();
+  dialogGeneration++;if(view==='fatal')dialog.dispatchEvent(new Event('unlock-stop'));stopTilt();input?.clear();
   dialog.dataset.view=view;
   if(view==='help'||view==='install')dialog.setAttribute('aria-label',view==='install'?'ホーム画面に追加':'遊び方');else dialog.removeAttribute('aria-label');
   dialog.innerHTML=html;if(!dialog.open)dialog.showModal();controlUI();installUI();
@@ -134,7 +157,7 @@ function finish(){
 }
 let helpWasPlaying=false;
 function help(){stopTilt();helpWasPlaying=progress.phase==='playing';if(helpWasPlaying)progress.pause();input?.clear();renderHelp();}
-function renderHelp(){showDialog(`<h2>遊び方</h2><div class="help-steps"><p><b>01</b><span><strong>${controlMode==='tilt'?'端末を傾ける':'1本指で回す'}</strong>${controlMode==='tilt'?'端末を傾けると迷路も傾きます。元の持ち方に戻すと迷路も戻ります。':'ドラッグで迷路を傾ける。指を離しても球は転がり続けます。'}</span></p><p><b>02</b><span><strong>2本指で調整</strong>${controlMode==='tilt'?'指でも回せます。ピンチで拡大・縮小。持ち替えたら「基準合わせ」。':'ひねって回転。ピンチで拡大・縮小。'}</span></p><p><b>03</b><span><strong>緑のリングへ</strong>金色の中継点を順に通り、緑のゴールで球を止めるとクリア。</span></p></div><p class="help-note">Safariからホーム画面に追加したアプリで、「オフラインで遊べます」を確認してください。</p>${installGuide.canOffer?'<button class="text-button help-install" data-action="install-guide">ホーム画面に追加する方法を見る</button>':''}<button class="primary" data-action="close-help">わかった ${icon('arrow')}</button>`,'help');}
+function renderHelp(){showDialog(`<h2>遊び方</h2><div class="help-steps"><p><b>01</b><span><strong>${controlMode==='tilt'?'端末を傾ける':'1本指で回す'}</strong>${controlMode==='tilt'?'端末を傾けると迷路も傾きます。元の持ち方に戻すと迷路も戻ります。':'ドラッグで迷路を傾ける。指を離しても球は転がり続けます。'}</span></p><p><b>02</b><span><strong>2本指で調整</strong>${controlMode==='tilt'?'指でも回せます。ピンチで拡大・縮小。持ち替えたら「基準合わせ」。':'ひねって回転。ピンチで拡大・縮小。'}</span></p><p><b>03</b><span><strong>緑のリングへ</strong>金色の中継点を順に通り、緑のゴールで球を止めるとクリア。</span></p></div><p class="help-note">Safariからホーム画面に追加したアプリで、「オフラインで遊べます」を確認してください。</p>${installGuide.canOffer?'<button class="text-button help-install" data-action="install-guide">ホーム画面に追加する方法を見る</button>':''}${progress.phase==='select'?'<button class="text-button" data-action="unlock">コースの解放・送金の復元</button>':''}<button class="primary" data-action="close-help">わかった ${icon('arrow')}</button>`,'help');}
 let installFromHelp=false;
 function showInstallGuide(){
   if(!installGuide.canOffer)return;
@@ -161,6 +184,7 @@ root.addEventListener('click',e=>{
     case 'calibrate':tilt?.recalibrate();input.clear();toast('この持ち方を基準にしました');break;
     case 'reset':resetBall();toast('中継点の姿勢に戻しました');break;
     case 'help':help();break;
+    case 'unlock':void unlock();break;
     case 'close-help':closeHelp();break;
     case 'install-guide':showInstallGuide();break;
     case 'close-install':closeInstallGuide();break;

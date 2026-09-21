@@ -50,7 +50,7 @@ for(const level of levels){
     expect(Math.abs(offset.dot(frame.side))+BALL_RADIUS).toBeLessThanOrEqual(TRACK_WIDTH/2-TRACK_BEVEL);
    }
   }}finally{physics.dispose();}
- });
+ },15000); // Exhaustive samples grow with route length; retain the same contact tolerances.
 }
 
 for(const level of levels)it(`${level.id}: visible endpoint decks support the complete sphere footprint`,()=>{

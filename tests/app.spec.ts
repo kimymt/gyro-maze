@@ -1,9 +1,11 @@
 import {test,expect} from '@playwright/test';
-test('ten worlds, gameplay, pause, reset and help work without browser errors',async({page})=>{
+// These regression tests exercise already unlocked gameplay. access.spec.ts covers the gate.
+test.beforeEach(async({page})=>{await page.addInitScript(()=>localStorage.setItem('gyro-maze-access-v1',JSON.stringify({version:1,method:'share'})));});
+test('twelve worlds, gameplay, pause, reset and help work without browser errors',async({page})=>{
  test.setTimeout(120000);
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/');
- await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();await expect(page.locator('[data-level]')).toHaveCount(10);
- for(let i=0;i<10;i++){
+ await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();await expect(page.locator('[data-level]')).toHaveCount(12);
+ for(let i=0;i<12;i++){
   await page.locator(`[data-level="${i}"]`).click();await page.getByRole('button',{name:'この世界で遊ぶ'}).click();
   await expect(page.locator('.play-hud')).toBeVisible();await expect(page.locator('#timer')).not.toHaveText('00:00');
   await page.getByRole('button',{name:'一時停止'}).click();const time=await page.locator('#timer').textContent();await expect(page.getByRole('dialog')).toBeVisible();
@@ -22,7 +24,7 @@ test('phone layout has no overflow and all worlds restart offline',async({page,c
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.screenshot({path:'test-results/phone.png',fullPage:true});
  await context.setOffline(true);await page.reload();await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();
- for(let i=0;i<10;i++){
+ for(let i=0;i<12;i++){
   await page.locator(`[data-level="${i}"]`).click();await page.getByRole('button',{name:'この世界で遊ぶ'}).click();await expect(page.locator('#timer')).not.toHaveText('00:00');
   await page.getByRole('button',{name:'一時停止'}).click();await page.getByRole('button',{name:'ステージ選択へ'}).click();
  }
@@ -39,7 +41,7 @@ test('evicted cache is detected and repaired',async({page})=>{
 });
 test('touch rotation, pinch, cancellation, and landscape remain usable',async({page,context})=>{
  await page.setViewportSize({width:390,height:844});await page.goto('/');await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();
- await page.locator('[data-level="9"]').click();await expect(page.locator('#scene-index')).toHaveText('10 / 10');const canvas=page.locator('canvas');await canvas.scrollIntoViewIfNeeded();const rect=await canvas.boundingBox();expect(rect).not.toBeNull();
+ await page.locator('[data-level="9"]').click();await expect(page.locator('#scene-index')).toHaveText('10 / 12');const canvas=page.locator('canvas');await canvas.scrollIntoViewIfNeeded();const rect=await canvas.boundingBox();expect(rect).not.toBeNull();
  const cdp=await context.newCDPSession(page);const x=rect!.x+rect!.width*.5,y=rect!.y+rect!.height*.5;
  const before=await canvas.screenshot();
  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y,id:1}]});

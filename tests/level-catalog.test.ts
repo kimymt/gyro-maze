@@ -3,12 +3,12 @@ import {CatmullRomCurve3} from 'three';
 
 afterEach(() => vi.restoreAllMocks());
 
-it('lists ten worlds without constructing routes and builds each requested world only once', async () => {
+it('lists twelve worlds without constructing routes and builds each requested world only once', async () => {
   vi.resetModules();
   const generateRoute = vi.spyOn(CatmullRomCurve3.prototype, 'updateArcLengths');
   const {levelDefinitions, getLevel, levels} = await import('../src/levels');
-  expect(levelDefinitions).toHaveLength(10);
-  expect(levels).toHaveLength(10);
+  expect(levelDefinitions).toHaveLength(12);
+  expect(levels).toHaveLength(12);
   expect(generateRoute).not.toHaveBeenCalled();
   for (let index = 0; index < levelDefinitions.length; index++) {
     const definition = levelDefinitions[index];
@@ -17,7 +17,7 @@ it('lists ten worlds without constructing routes and builds each requested world
     expect(definition).not.toHaveProperty('blocks');
     expect(Object.getOwnPropertyDescriptor(levels, index)?.get).toBeTypeOf('function');
   }
-  expect(new Set(levelDefinitions.map(level => level.id)).size).toBe(10);
+  expect(new Set(levelDefinitions.map(level => level.id)).size).toBe(12);
   // Opening stage 10 directly must not build the preceding nine stages.
   const last = getLevel(9), calls = generateRoute.mock.calls.length;
   expect(calls).toBe(1);
@@ -44,12 +44,12 @@ it('increases both world dimensions and playable route length on every stage', a
   }
 });
 
-it('loads records for all ten worlds while retaining the retired third-stage record', async () => {
+it('loads records for all twelve worlds while retaining the retired third-stage record', async () => {
   const {levelDefinitions} = await import('../src/levels');
   const {parseSave} = await import('../src/state');
   const records = Object.fromEntries(levelDefinitions.map((level, index) => [level.id, {time: 20 + index, falls: 0}]));
   records['water-wilderness'] = {time: 12, falls: 0};
-  for(const level of levelDefinitions.slice(3)){
+  for(const level of levelDefinitions.slice(3,10)){
     expect(level.id).toMatch(/-v2$/);
     records[level.id.replace(/-v2$/,'')]={time:10,falls:0};
   }
@@ -58,11 +58,11 @@ it('loads records for all ten worlds while retaining the retired third-stage rec
   expect(saved.quality).toBe('low');
 });
 
-it('gives stages 04-10 different routes even after removing scale and quarter turns',async()=>{
+it('gives stages 04-12 different routes even after removing scale and quarter turns',async()=>{
   const {getLevel}=await import('../src/levels');
   // Compare positions at equal fractions of travel, so size or a rotated clone
   // cannot masquerade as a different course. This complements visual review.
-  const samples=Array.from({length:7},(_,i)=>{
+  const samples=Array.from({length:9},(_,i)=>{
     const level=getLevel(i+3);
     return Array.from({length:64},(_,j)=>{
       const distance=level.routeLength*j/63;
