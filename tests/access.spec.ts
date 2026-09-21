@@ -58,3 +58,35 @@ test('Lightning declaration works for the session when storage is unavailable',a
  await gate(page);await page.getByRole('button',{name:'Lightningで支援する',exact:true}).click();await page.getByRole('button',{name:'送金しました',exact:true}).click();
  await expect(page.locator('[data-level].locked')).toHaveCount(0);await expect(page.locator('#toast')).toContainText('今回は開いている間だけ有効');
 });
+for(const [method,label,done] of [['breathing','3回深呼吸する','3回深呼吸しました'],['gratitude','感謝したい人の顔を思い浮かべる','思い浮かべました']]){
+ test(`${method} requires a declaration and persists`,async({page})=>{
+  await gate(page);
+  await expect(page.locator('dialog .secondary')).toHaveText(['SNSでシェア','3回深呼吸する','感謝したい人の顔を思い浮かべる','寄付する','Lightningで支援する']);
+  await page.getByRole('button',{name:label,exact:true}).click();
+  expect(await page.evaluate(()=>localStorage.getItem('gyro-maze-access-v1'))).toBeNull();
+  await page.getByRole('button',{name:done,exact:true}).click();await page.reload();
+  await expect(page.locator('[data-level].locked')).toHaveCount(0);
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('gyro-maze-access-v1')!).method)).toBe(method);
+ });
+}
+test('native sharing and copied links use the public domain',async({page})=>{
+ await page.addInitScript(()=>{
+  Object.defineProperty(navigator,'share',{value:async(data:ShareData)=>{document.documentElement.dataset.shared=data.url;}});
+  Object.defineProperty(navigator,'clipboard',{value:{writeText:async(text:string)=>{document.documentElement.dataset.copied=text;}}});
+ });
+ await gate(page);await page.getByRole('button',{name:'SNSでシェア',exact:true}).click();
+ await page.getByRole('button',{name:'共有先を選ぶ'}).click();await expect(page.locator('html')).toHaveAttribute('data-shared','https://gyro.mymt.casa/');
+ await page.getByRole('button',{name:'リンクをコピー'}).click();await expect(page.locator('html')).toHaveAttribute('data-copied','https://gyro.mymt.casa/');
+});
+for(const width of [320,393])test(`phone layout ${width}: header, locks and payment alignment`,async({page})=>{
+ await page.setViewportSize({width,height:852});await page.goto('/');await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');
+ await expect(page.locator('.header #offline-text')).toBeInViewport();
+ await expect(page.locator('.locked .level-lock')).toHaveCount(6);
+ await expect(page.locator('[data-level="6"]')).not.toContainText('解放');
+ await page.screenshot({path:`/private/tmp/gyro-home-${width}.png`});
+ await gate(page);await page.getByRole('button',{name:'Lightningで支援する',exact:true}).click();await expect(page.locator('.payment-qr')).toHaveAttribute('width','220');
+ const address=page.getByLabel('Lightning送金先',{exact:true});await expect(address).toHaveAttribute('type','text');
+ const boxes=await Promise.all([address,page.locator('[data-unlock="copy-address"]'),page.locator('.payment-wallet'),page.locator('[data-unlock="sent"]')].map(e=>e.boundingBox()));
+ for(const box of boxes){expect(box!.x).toBeCloseTo(boxes[0]!.x,0);expect(box!.width).toBeCloseTo(boxes[0]!.width,0);expect(box!.x+box!.width).toBeLessThan(width);}
+ await page.screenshot({path:`/private/tmp/gyro-payment-${width}.png`});
+});

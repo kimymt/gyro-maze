@@ -22,6 +22,7 @@ test.beforeAll(async()=>{
 });
 test.afterAll(()=>new Promise<void>(r=>server.close(()=>r())));
 test('failed installation can retry; updates wait until the selection screen',async({page,context})=>{
+ await page.setViewportSize({width:320,height:852});
  version='broken';failAsset=true;await page.goto(base);await expect(page.locator('#offline-text')).toHaveText('オフライン保存が完了していません');
  failAsset=false;version='v1';await page.getByRole('button',{name:'再試行',exact:true}).click();await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');
  await page.getByRole('button',{name:'この世界で遊ぶ'}).click();
@@ -29,7 +30,7 @@ test('failed installation can retry; updates wait until the selection screen',as
  await expect.poll(()=>page.evaluate(async()=>!!(await navigator.serviceWorker.getRegistration())?.waiting)).toBe(true);
  await expect(page.getByRole('button',{name:'更新する',exact:true})).toBeHidden();await expect(page.locator('.play-hud')).toBeVisible();
  await page.getByRole('button',{name:'一時停止'}).click();await page.getByRole('button',{name:'ステージ選択へ'}).click();
- await expect(page.getByRole('button',{name:'更新する',exact:true})).toBeVisible();await page.getByRole('button',{name:'更新する',exact:true}).click();
+ await page.evaluate(()=>scrollTo(0,0));await expect(page.locator('.header').getByRole('button',{name:'更新する',exact:true})).toBeInViewport();await page.getByRole('button',{name:'更新する',exact:true}).click();
  await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');
  version='broken-v3';failAsset=true;await page.evaluate(async()=>{const r=await navigator.serviceWorker.getRegistration();await r!.update();});
  await expect(page.locator('#offline-text')).toHaveText('オフライン保存が完了していません');

@@ -29,12 +29,12 @@ test('iPhone banner uses the approved copy, fits the mobile layout and yields to
    const layout=await page.evaluate(()=>{
     const start=document.querySelector('.start')!.getBoundingClientRect();
     const notice=document.querySelector('#install-banner')!.getBoundingClientRect();
-    const footer=document.querySelector('.footer')!.getBoundingClientRect();
-    return {width:innerWidth,scroll:document.documentElement.scrollWidth,startBottom:start.bottom,noticeTop:notice.top,noticeBottom:notice.bottom,footerTop:footer.top};
+    const header=document.querySelector('.header')!.getBoundingClientRect();
+    return {width:innerWidth,scroll:document.documentElement.scrollWidth,startBottom:start.bottom,noticeTop:notice.top,noticeBottom:notice.bottom,headerBottom:header.bottom};
    });
    expect(layout.scroll).toBeLessThanOrEqual(layout.width);
    expect(layout.noticeTop).toBeGreaterThanOrEqual(layout.startBottom-1);
-   expect(layout.noticeBottom).toBeLessThanOrEqual(layout.footerTop+1);
+   expect(layout.headerBottom).toBeLessThanOrEqual(layout.noticeTop);
   }
  }
  await banner.getByRole('button',{name:installAction,exact:true}).click();
