@@ -14,17 +14,6 @@ test('donation requires explicit declaration and works offline after caching',as
  await gate(page);await page.getByRole('button',{name:'寄付する',exact:true}).click();expect(await page.evaluate(()=>localStorage.getItem('gyro-maze-access-v1'))).toBeNull();await page.getByRole('button',{name:'寄付しました'}).click();
  await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');await context.setOffline(true);await page.reload();await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();await page.locator('[data-level="11"]').click();await page.getByRole('button',{name:'この世界で遊ぶ'}).click();await expect(page.locator('.play-hud')).toBeVisible();
 });
-test('Lightning stays locked until server confirms paid and preserves recovery code',async({page})=>{
- let paid=false,amount=0;
- await page.route('**/api/lightning/**',async route=>{const data=route.request().postDataJSON();if(route.request().url().endsWith('/invoice')){amount=data.amount;await route.fulfill({json:{id:'a'.repeat(48),secret:'b'.repeat(48),invoice:'lnbc-test-fixture',amount,expiresAt:Date.now()+3600000}});}else await route.fulfill({json:{status:paid?'paid':'pending'}});});
- await gate(page);await page.getByRole('button',{name:'Lightningで支援する',exact:true}).click();await page.getByLabel('金額（sat）').fill('21');await page.getByRole('button',{name:'請求書を作る'}).click();await expect(page.getByRole('button',{name:'入金を再確認'})).toBeVisible();expect(amount).toBe(21);expect(await page.evaluate(()=>localStorage.getItem('gyro-maze-access-v1'))).toBeNull();await expect(page.getByLabel('復元コード',{exact:true})).toHaveValue('a'.repeat(48)+'.'+'b'.repeat(48));
- paid=true;await page.getByRole('button',{name:'入金を再確認'}).click();await expect(page.locator('[data-level].locked')).toHaveCount(0);
- expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('gyro-maze-access-v1')!).method)).toBe('lightning');
-});
-test('payment network failure and invalid amount do not unlock',async({page})=>{
- await page.route('**/api/lightning/**',route=>route.abort());await gate(page);await page.getByRole('button',{name:'Lightningで支援する',exact:true}).click();await page.getByLabel('金額（sat）').fill('0');await page.getByRole('button',{name:'請求書を作る'}).click();await expect(page.locator('[data-payment-status]')).toContainText('1 sat以上');await page.getByLabel('金額（sat）').fill('1');await page.getByRole('button',{name:'請求書を作る'}).click();await expect(page.locator('[data-payment-status]')).toContainText('作れません');expect(await page.evaluate(()=>localStorage.getItem('gyro-maze-access-v1'))).toBeNull();
-});
-
 test('the next-course action from 06 cannot bypass the gate',async({page})=>{
  await page.goto('/');await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();await page.locator('[data-level="5"]').click();
  // Exercise the same delegated action used by the completion dialog without
@@ -32,18 +21,40 @@ test('the next-course action from 06 cannot bypass the gate',async({page})=>{
  await page.evaluate(()=>{const button=document.createElement('button');button.dataset.action='next';button.id='next-test';document.querySelector('#app')!.append(button);button.click();button.remove();});
  await expect(page.getByRole('heading',{name:'07〜12を解放する'})).toBeVisible();await expect(page.locator('.play-hud')).toBeHidden();
 });
-test('a paid recovery code restores access; pending and rejected codes do not',async({page})=>{
- let paid=false;await page.route('**/api/lightning/status',route=>route.fulfill({json:paid?{status:'paid'}:{status:'pending',invoice:'lnbc-test',amount:1,expiresAt:Date.now()+3600000}}));
- await gate(page);await page.getByRole('button',{name:'送金の復元コードを使う'}).click();await page.getByLabel('復元コード',{exact:true}).fill('bad');await page.getByRole('button',{name:'入金を確認して復元'}).click();await expect(page.locator('[data-payment-status]')).toContainText('コードを確認');
- await page.getByLabel('復元コード',{exact:true}).fill('a'.repeat(48)+'.'+'b'.repeat(48));await page.getByRole('button',{name:'入金を確認して復元'}).click();await expect(page.getByRole('button',{name:'入金を再確認'})).toBeVisible();expect(await page.evaluate(()=>localStorage.getItem('gyro-maze-access-v1'))).toBeNull();paid=true;await page.getByRole('button',{name:'入金を再確認'}).click();await expect(page.locator('[data-level].locked')).toHaveCount(0);
+test('Lightning address and QR never unlock; declaration alone unlocks locally without a payment API',async({page,context})=>{
+ await page.setViewportSize({width:393,height:852});
+ const requests:string[]=[];page.on('request',r=>{if(/\/api\/|walletofsatoshi|livingroomofsatoshi/.test(r.url()))requests.push(r.url());});
+ await gate(page);await page.getByRole('button',{name:'Lightningで支援する',exact:true}).click();
+ await expect(page.getByLabel('Lightning送金先',{exact:true})).toHaveValue('garbledaction736@walletofsatoshi.com');
+ await expect(page.getByRole('link',{name:'ウォレットを開く'})).toHaveAttribute('href',/^lightning:lnurl1/);
+ await expect(page.locator('.payment-qr')).toHaveAttribute('width','220');
+ await page.screenshot({path:'/private/tmp/gyro-self-report-phone.png'});
+ await page.getByRole('button',{name:'送金先をコピー'}).click();
+ expect(await page.evaluate(()=>localStorage.getItem('gyro-maze-access-v1'))).toBeNull();
+ await page.getByRole('button',{name:'送金しました',exact:true}).click();await expect(page.locator('[data-level].locked')).toHaveCount(0);
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('gyro-maze-access-v1')!))).toEqual({version:1,method:'lightning'});
+ await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');await context.setOffline(true);await page.reload();
+ await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();await page.locator('[data-level="11"]').click();await page.getByRole('button',{name:'この世界で遊ぶ'}).click();await expect(page.locator('.play-hud')).toBeVisible();
+ expect(requests).toEqual([]);
 });
-test('a late payment response cannot dismiss a graphics failure dialog',async({page})=>{
- let release!:()=>void;const hold=new Promise<void>(resolve=>release=resolve);
- await page.route('**/api/lightning/**',async route=>{
-  if(route.request().url().endsWith('/invoice'))await route.fulfill({json:{id:'a'.repeat(48),secret:'b'.repeat(48),invoice:'lnbc-test',amount:1,expiresAt:Date.now()+3600000}});
-  else{await hold;await route.fulfill({json:{status:'paid'}});}
+test('legacy pending invoices are removed, BEST survives, and already-paid users can declare offline',async({page,context})=>{
+ await page.addInitScript(()=>{
+  localStorage.setItem('gyro-maze-lightning-v1',JSON.stringify({id:'old-id',secret:'old-secret',invoice:'old-invoice',amount:1,expiresAt:Date.now()+10000}));
+  localStorage.setItem('gyro-maze-save',JSON.stringify({version:1,quality:'auto',records:{'woodland-cube':{time:60,falls:0}}}));
  });
- await gate(page);await page.getByRole('button',{name:'Lightningで支援する',exact:true}).click();await page.getByRole('button',{name:'請求書を作る'}).click();await expect(page.getByRole('button',{name:'入金を再確認'})).toBeVisible();
- await page.locator('#scene').dispatchEvent('webglcontextlost');await expect(page.getByRole('heading',{name:'描画が停止しました。'})).toBeVisible();release();await page.waitForTimeout(300);
- await expect(page.getByRole('heading',{name:'描画が停止しました。'})).toBeVisible();expect(await page.evaluate(()=>localStorage.getItem('gyro-maze-access-v1'))).toBeNull();
+ await page.goto('/');await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');await context.setOffline(true);
+ await gate(page);expect(await page.evaluate(()=>localStorage.getItem('gyro-maze-lightning-v1'))).toBeNull();
+ await expect(page.getByRole('button',{name:'送金の復元コードを使う'})).toHaveCount(0);
+ await page.getByRole('button',{name:'Lightningで支援する',exact:true}).click();await expect(page.getByText(/すでに送金した方は/)).toBeVisible();
+ await expect(page.getByRole('button',{name:'請求書を作る'})).toHaveCount(0);await page.getByRole('button',{name:'送金しました',exact:true}).click();
+ await expect(page.locator('[data-level].locked')).toHaveCount(0);await expect(page.locator('[data-record="woodland-cube"]')).toHaveText('BEST 01:00');
+});
+test('an existing Lightning unlock survives migration',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('gyro-maze-access-v1',JSON.stringify({version:1,method:'lightning'})));
+ await page.goto('/');await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();await expect(page.locator('[data-level].locked')).toHaveCount(0);
+});
+test('Lightning declaration works for the session when storage is unavailable',async({page})=>{
+ await page.addInitScript(()=>{Storage.prototype.getItem=()=>{throw Error('unavailable');};Storage.prototype.setItem=()=>{throw Error('unavailable');};Storage.prototype.removeItem=()=>{throw Error('unavailable');};});
+ await gate(page);await page.getByRole('button',{name:'Lightningで支援する',exact:true}).click();await page.getByRole('button',{name:'送金しました',exact:true}).click();
+ await expect(page.locator('[data-level].locked')).toHaveCount(0);await expect(page.locator('#toast')).toContainText('今回は開いている間だけ有効');
 });

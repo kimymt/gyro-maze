@@ -15,3 +15,8 @@ it('storage denial preserves a session grant and reports persistence failure',()
  vi.stubGlobal('localStorage',{getItem:()=>{throw Error();},setItem:()=>{throw Error();}});
  const access=new Access();expect(access.canPlay(6)).toBe(false);expect(access.grant('share')).toBe(false);expect(access.canPlay(11)).toBe(true);expect(new Access().canPlay(11)).toBe(false);
 });
+it('clears only retired invoice credentials when migrating',()=>{
+ const values=new Map([[ACCESS_KEY,JSON.stringify({version:1,method:'lightning'})],['gyro-maze-save','old record'],['gyro-maze-lightning-v1','old invoice and token']]);
+ vi.stubGlobal('localStorage',{getItem:(key:string)=>values.get(key),removeItem:(key:string)=>values.delete(key)});
+ expect(new Access().canPlay(11)).toBe(true);expect(values.has('gyro-maze-lightning-v1')).toBe(false);expect(values.get('gyro-maze-save')).toBe('old record');
+});

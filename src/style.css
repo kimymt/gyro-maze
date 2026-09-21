@@ -136,9 +136,11 @@ dialog>p:not(.eyebrow),.help-steps p,.install-steps li{font-size:16px;line-heigh
 
 .locked .level-number::after{content:"・解放";font-size:11px;color:var(--muted);margin-left:4px}
 .payment-field{display:grid;gap:8px;margin:18px 0;font-size:14px}
-.payment-field input{width:100%;min-width:0;padding:12px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:inherit;font:inherit;font-size:16px}
+.payment-field input,.payment-field textarea{width:100%;min-width:0;padding:12px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:inherit;font:inherit;font-size:16px}
 .payment-qr{display:block;max-width:100%;height:auto;margin:16px auto;background:white}
-.payment-wallet{display:flex;text-decoration:none;justify-content:center}
+dialog .payment-wallet{display:flex;text-decoration:none;justify-content:center}
 [data-payment-status]{font-size:14px;line-height:1.6;overflow-wrap:anywhere}
 [data-payment-status]:empty{display:none}
 dialog .help-note{overflow-wrap:anywhere}
+
+.payment-field textarea{resize:none;line-height:1.5}
