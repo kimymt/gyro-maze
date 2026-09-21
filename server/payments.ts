@@ -19,8 +19,8 @@ export function invoiceFields(invoice:string){
   return {amount:Number(value('amount')),descriptionHash:value('description_hash'),expiresAt:(Number(value('timestamp'))+Number(value('expiry')??3600))*1000};
 }
 async function remoteJSON(url:string|URL){
-  const response=await fetch(url,{signal:AbortSignal.timeout(12000),redirect:'error'});
-  if(!response.ok)throw new Error('Receiver unavailable');
+  const response=await fetch(url,{signal:AbortSignal.timeout(12000),redirect:'manual'});
+  if(!response.ok)throw new Error(`Receiver HTTP ${response.status}`);
   const body=await response.text();if(body.length>20000)throw new Error('Invalid receiver response');
   return JSON.parse(body);
 }

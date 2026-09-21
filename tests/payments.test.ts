@@ -34,7 +34,8 @@ it('accepts only a matching, correctly signed provider receipt',async()=>{
 });
 it('creates a bound invoice and rejects a changed receiver or amount',async()=>{
  let callbackRequest:URL|undefined;
- vi.stubGlobal('fetch',vi.fn(async(url:string|URL)=>{
+ vi.stubGlobal('fetch',vi.fn(async(url:string|URL,options:RequestInit)=>{
+  expect(options.redirect).toBe('manual');
   if(String(url).includes('/.well-known/'))return Response.json({tag:'payRequest',allowsNostr:true,nostrPubkey:'be1d89794bf92de5dd64c1e60f6a2c70c140abac9932418fee30c5c637fe9479',callback:'https://livingroomofsatoshi.com/api/v1/lnurl/payreq/test',minSendable:1000,maxSendable:100000000000});
   callbackRequest=new URL(url);return Response.json({pr:invoice(await hash(callbackRequest.searchParams.get('nostr')!),21000)});
  }));

@@ -60,6 +60,6 @@ export default {
         return json({status:paid?'paid':Date.now()>=intent.expiresAt?'expired':'pending',amount:intent.amount,expiresAt:intent.expiresAt,invoice:intent.invoice});
       }
       return json({error:'Not found'},404);
-    }catch(error){if(error instanceof RangeError)return json({error:'Request too large'},413);if(error instanceof SyntaxError)return json({error:'Invalid JSON'},400);return json({error:'通信できませんでした。解放は行っていません。時間をおいて再確認してください。'},503);}
+    }catch(error){if(error instanceof RangeError)return json({error:'Request too large'},413);if(error instanceof SyntaxError)return json({error:'Invalid JSON'},400);console.error('Payment API failed',error instanceof Error?error.message:'Unknown error');return json({error:'通信できませんでした。解放は行っていません。時間をおいて再確認してください。'},503);}
   }
 } satisfies ExportedHandler<Env>;
