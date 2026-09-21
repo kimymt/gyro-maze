@@ -33,6 +33,7 @@ test('new-stage records survive startup, a settings save and a subsequent reload
  const records=Object.fromEntries(ids.map((id,index)=>[id,{time:60+index,falls:index}]));
  // The retired stage 03 record must also survive alongside all ten active stages.
  records['water-wilderness']={time:123,falls:0};
+ for(const id of ids.slice(3))records[id.replace(/-v2$/,'')]={time:10,falls:0};
  await page.evaluate(records=>localStorage.setItem('gyro-maze-save',JSON.stringify({version:1,quality:'auto',records})),records);
  await page.reload();await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();
  for(let i=0;i<10;i++)await expect(page.locator(`[data-record="${ids[i]}"]`)).toHaveText(`BEST 01:${i.toString().padStart(2,'0')}`);

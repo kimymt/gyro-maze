@@ -1,0 +1,34 @@
+{
+  "environment": "Desktop Chromium with SwiftShader; these timings do not represent iPhone performance.",
+  "errors": [],
+  "selections": [
+    {
+      "number": "04",
+      "selectionToTwoFramesMs": 1264.9000000059605
+    },
+    {
+      "number": "05",
+      "selectionToTwoFramesMs": 41.30000001192093
+    },
+    {
+      "number": "06",
+      "selectionToTwoFramesMs": 177.89999997615814
+    },
+    {
+      "number": "07",
+      "selectionToTwoFramesMs": 44.400000005960464
+    },
+    {
+      "number": "08",
+      "selectionToTwoFramesMs": 262
+    },
+    {
+      "number": "09",
+      "selectionToTwoFramesMs": 122.7000000178814
+    },
+    {
+      "number": "10",
+      "selectionToTwoFramesMs": 161.5
+    }
+  ]
+}

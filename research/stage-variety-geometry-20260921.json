@@ -1,0 +1,486 @@
+{
+  "baselineCommit": "23944e638578cfa7891846f1c55c02ed8436eb22",
+  "preservedStages": [
+    {
+      "number": "01",
+      "fields": {
+        "route": {
+          "oldHash": "b62a2c40bcc8a4745df7d6513eae99f4a0a61fa983b90acae439cd4bc2a84be9",
+          "newHash": "b62a2c40bcc8a4745df7d6513eae99f4a0a61fa983b90acae439cd4bc2a84be9",
+          "equal": true
+        },
+        "blocks": {
+          "oldHash": "5bb6afc3c9865bed601e64871d3e8a4dc3e4e8c46b43d7759ad2a81ab3b3f3ef",
+          "newHash": "5bb6afc3c9865bed601e64871d3e8a4dc3e4e8c46b43d7759ad2a81ab3b3f3ef",
+          "equal": true
+        },
+        "start": {
+          "oldHash": "cdafa1d61befb122ecbe10811dfb3e9c11f4779795fd383628e892cbe789cdf8",
+          "newHash": "cdafa1d61befb122ecbe10811dfb3e9c11f4779795fd383628e892cbe789cdf8",
+          "equal": true
+        },
+        "checkpoints": {
+          "oldHash": "9972ca57205701aabab04452a342767f98aba28229dc3ecfdfe51ad0481396e9",
+          "newHash": "9972ca57205701aabab04452a342767f98aba28229dc3ecfdfe51ad0481396e9",
+          "equal": true
+        },
+        "goal": {
+          "oldHash": "11fb157e2b130e73783c7604186decfec9da94e3a927ec6a81b8d01ac4c928a2",
+          "newHash": "11fb157e2b130e73783c7604186decfec9da94e3a927ec6a81b8d01ac4c928a2",
+          "equal": true
+        }
+      }
+    },
+    {
+      "number": "02",
+      "fields": {
+        "route": {
+          "oldHash": "8e0f4620683f63fe63334fdb668e4a60a76de4c1267c489b2f3c99f0b6cfbcc9",
+          "newHash": "8e0f4620683f63fe63334fdb668e4a60a76de4c1267c489b2f3c99f0b6cfbcc9",
+          "equal": true
+        },
+        "blocks": {
+          "oldHash": "81f9db10ece6e1be37b001652c0b6ad2c05b4fda8dd1ddd88b42dd44d748d045",
+          "newHash": "81f9db10ece6e1be37b001652c0b6ad2c05b4fda8dd1ddd88b42dd44d748d045",
+          "equal": true
+        },
+        "start": {
+          "oldHash": "03357ffffac0464c17f4ed522d9ae4a19ab5aee8388edca30e7073358fe3fd04",
+          "newHash": "03357ffffac0464c17f4ed522d9ae4a19ab5aee8388edca30e7073358fe3fd04",
+          "equal": true
+        },
+        "checkpoints": {
+          "oldHash": "61a9bf8af5460ef4e50e9a261b963912099451f9bd2fbd1e72ef217f8b7a772b",
+          "newHash": "61a9bf8af5460ef4e50e9a261b963912099451f9bd2fbd1e72ef217f8b7a772b",
+          "equal": true
+        },
+        "goal": {
+          "oldHash": "01d86a3e9a1a509b2ac672bc47d1b2a4f7dffa49c315514ed00c11865ead85a4",
+          "newHash": "01d86a3e9a1a509b2ac672bc47d1b2a4f7dffa49c315514ed00c11865ead85a4",
+          "equal": true
+        }
+      }
+    },
+    {
+      "number": "03",
+      "fields": {
+        "route": {
+          "oldHash": "15d03dc4cd2869e03cecf7d585c87707621368b49c0911213976a9831a67827e",
+          "newHash": "15d03dc4cd2869e03cecf7d585c87707621368b49c0911213976a9831a67827e",
+          "equal": true
+        },
+        "blocks": {
+          "oldHash": "451b7dd88a3d67e504d60068d3776e3f694c15a0b8ab5a84afabafdbfe286abe",
+          "newHash": "451b7dd88a3d67e504d60068d3776e3f694c15a0b8ab5a84afabafdbfe286abe",
+          "equal": true
+        },
+        "start": {
+          "oldHash": "11d257d7d682e170d6f630c6cf98dc4f95729f4411f58eba0301cc3d70bfcd5e",
+          "newHash": "11d257d7d682e170d6f630c6cf98dc4f95729f4411f58eba0301cc3d70bfcd5e",
+          "equal": true
+        },
+        "checkpoints": {
+          "oldHash": "6fd763e0e97495f235d5fa165eceaccbe3e5ed66e613d5867b5387e4b45790e4",
+          "newHash": "6fd763e0e97495f235d5fa165eceaccbe3e5ed66e613d5867b5387e4b45790e4",
+          "equal": true
+        },
+        "goal": {
+          "oldHash": "24aef171fce9485ef1c8a8cf64880440845a81d78024dd005daccd9e075c5b88",
+          "newHash": "24aef171fce9485ef1c8a8cf64880440845a81d78024dd005daccd9e075c5b88",
+          "equal": true
+        }
+      }
+    }
+  ],
+  "method": "64 equal-distance samples per route; divide coordinates by halfSize; take minimum RMS over four quarter turns. This is a geometric regression measure, not a visual-quality score.",
+  "beforePairDistances": [
+    {
+      "stages": [
+        4,
+        5
+      ],
+      "normalizedRms": 0.16418121326807217
+    },
+    {
+      "stages": [
+        4,
+        6
+      ],
+      "normalizedRms": 0.11069964467537463
+    },
+    {
+      "stages": [
+        4,
+        7
+      ],
+      "normalizedRms": 0.09253822332319712
+    },
+    {
+      "stages": [
+        4,
+        8
+      ],
+      "normalizedRms": 0.1478102499794381
+    },
+    {
+      "stages": [
+        4,
+        9
+      ],
+      "normalizedRms": 0.12719783245823513
+    },
+    {
+      "stages": [
+        4,
+        10
+      ],
+      "normalizedRms": 0.10809060066160965
+    },
+    {
+      "stages": [
+        5,
+        6
+      ],
+      "normalizedRms": 0.26361782819362023
+    },
+    {
+      "stages": [
+        5,
+        7
+      ],
+      "normalizedRms": 0.0843197075590166
+    },
+    {
+      "stages": [
+        5,
+        8
+      ],
+      "normalizedRms": 0.2136666952584176
+    },
+    {
+      "stages": [
+        5,
+        9
+      ],
+      "normalizedRms": 0.11544894130704267
+    },
+    {
+      "stages": [
+        5,
+        10
+      ],
+      "normalizedRms": 0.1962124693894304
+    },
+    {
+      "stages": [
+        6,
+        7
+      ],
+      "normalizedRms": 0.19015348463246107
+    },
+    {
+      "stages": [
+        6,
+        8
+      ],
+      "normalizedRms": 0.2148067990859291
+    },
+    {
+      "stages": [
+        6,
+        9
+      ],
+      "normalizedRms": 0.1867498490691529
+    },
+    {
+      "stages": [
+        6,
+        10
+      ],
+      "normalizedRms": 0.16880842930266238
+    },
+    {
+      "stages": [
+        7,
+        8
+      ],
+      "normalizedRms": 0.14888825815811482
+    },
+    {
+      "stages": [
+        7,
+        9
+      ],
+      "normalizedRms": 0.092190097067153
+    },
+    {
+      "stages": [
+        7,
+        10
+      ],
+      "normalizedRms": 0.1214018658879652
+    },
+    {
+      "stages": [
+        8,
+        9
+      ],
+      "normalizedRms": 0.23080470490450666
+    },
+    {
+      "stages": [
+        8,
+        10
+      ],
+      "normalizedRms": 0.05986978123186598
+    },
+    {
+      "stages": [
+        9,
+        10
+      ],
+      "normalizedRms": 0.19243898541957058
+    }
+  ],
+  "afterPairDistances": [
+    {
+      "stages": [
+        4,
+        5
+      ],
+      "normalizedRms": 1.0038336038028945
+    },
+    {
+      "stages": [
+        4,
+        6
+      ],
+      "normalizedRms": 0.8819275832395349
+    },
+    {
+      "stages": [
+        4,
+        7
+      ],
+      "normalizedRms": 1.1006022809756781
+    },
+    {
+      "stages": [
+        4,
+        8
+      ],
+      "normalizedRms": 1.0535308150577025
+    },
+    {
+      "stages": [
+        4,
+        9
+      ],
+      "normalizedRms": 1.3088168432535463
+    },
+    {
+      "stages": [
+        4,
+        10
+      ],
+      "normalizedRms": 1.3112801747044383
+    },
+    {
+      "stages": [
+        5,
+        6
+      ],
+      "normalizedRms": 0.8059244317697981
+    },
+    {
+      "stages": [
+        5,
+        7
+      ],
+      "normalizedRms": 1.2526505992184294
+    },
+    {
+      "stages": [
+        5,
+        8
+      ],
+      "normalizedRms": 0.955761592536679
+    },
+    {
+      "stages": [
+        5,
+        9
+      ],
+      "normalizedRms": 1.1480155257975315
+    },
+    {
+      "stages": [
+        5,
+        10
+      ],
+      "normalizedRms": 1.2342906057348857
+    },
+    {
+      "stages": [
+        6,
+        7
+      ],
+      "normalizedRms": 1.253063755463141
+    },
+    {
+      "stages": [
+        6,
+        8
+      ],
+      "normalizedRms": 1.1373434840922765
+    },
+    {
+      "stages": [
+        6,
+        9
+      ],
+      "normalizedRms": 1.3571587069487991
+    },
+    {
+      "stages": [
+        6,
+        10
+      ],
+      "normalizedRms": 1.2631059811323004
+    },
+    {
+      "stages": [
+        7,
+        8
+      ],
+      "normalizedRms": 1.4691975543215716
+    },
+    {
+      "stages": [
+        7,
+        9
+      ],
+      "normalizedRms": 1.4704690425033329
+    },
+    {
+      "stages": [
+        7,
+        10
+      ],
+      "normalizedRms": 1.3157153005468074
+    },
+    {
+      "stages": [
+        8,
+        9
+      ],
+      "normalizedRms": 1.0652065087087341
+    },
+    {
+      "stages": [
+        8,
+        10
+      ],
+      "normalizedRms": 1.3025766210590666
+    },
+    {
+      "stages": [
+        9,
+        10
+      ],
+      "normalizedRms": 1.286280291177254
+    }
+  ],
+  "stages": [
+    {
+      "number": "01",
+      "id": "woodland-cube",
+      "label": "小さな森",
+      "edge": 4.4,
+      "routeLength": 19.186697853880414,
+      "routeSamples": 394,
+      "terrainBlocks": 37
+    },
+    {
+      "number": "02",
+      "id": "earthen-passages",
+      "label": "広い回廊",
+      "edge": 7.2,
+      "routeLength": 38.632077572651575,
+      "routeSamples": 786,
+      "terrainBlocks": 189
+    },
+    {
+      "number": "03",
+      "id": "water-wilderness-lowlands",
+      "label": "大きな大地",
+      "edge": 10.8,
+      "routeLength": 65.26108851234083,
+      "routeSamples": 1322,
+      "terrainBlocks": 508
+    },
+    {
+      "number": "04",
+      "id": "fern-hollows-v2",
+      "label": "吹き抜け",
+      "edge": 13.2,
+      "routeLength": 74.86309923449551,
+      "routeSamples": 1510,
+      "terrainBlocks": 408
+    },
+    {
+      "number": "05",
+      "id": "cedar-terraces-v2",
+      "label": "木の段丘",
+      "edge": 16,
+      "routeLength": 105.27381057887047,
+      "routeSamples": 2118,
+      "terrainBlocks": 352
+    },
+    {
+      "number": "06",
+      "id": "river-canyon-v2",
+      "label": "峡谷の橋",
+      "edge": 19.2,
+      "routeLength": 151.0604082202232,
+      "routeSamples": 3036,
+      "terrainBlocks": 355
+    },
+    {
+      "number": "07",
+      "id": "basalt-garden-v2",
+      "label": "岩の螺旋",
+      "edge": 22.8,
+      "routeLength": 184.26632014971293,
+      "routeSamples": 3704,
+      "terrainBlocks": 373
+    },
+    {
+      "number": "08",
+      "id": "emerald-caverns-v2",
+      "label": "二重アーチ",
+      "edge": 26.8,
+      "routeLength": 254.86822718523817,
+      "routeSamples": 5116,
+      "terrainBlocks": 303
+    },
+    {
+      "number": "09",
+      "id": "tidal-highlands-v2",
+      "label": "水辺の島",
+      "edge": 31.2,
+      "routeLength": 331.7551093817422,
+      "routeSamples": 6656,
+      "terrainBlocks": 392
+    },
+    {
+      "number": "10",
+      "id": "ancient-wilderness-v2",
+      "label": "三層迷路",
+      "edge": 36,
+      "routeLength": 489.9437880168739,
+      "routeSamples": 9824,
+      "terrainBlocks": 300
+    }
+  ]
+}

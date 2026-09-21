@@ -100,6 +100,7 @@ function makeLevel(index:number,definition:LevelDefinition,guides:Guide[]):Level
   const cells=Math.min(5+index*2,9),unit=2*halfSize/cells;
   for(let x=0;x<cells;x++)for(let y=0;y<cells;y++)for(let z=0;z<cells;z++){
     const p:V3=[-halfSize+(x+.5)*unit,-halfSize+(y+.5)*unit,-halfSize+(z+.5)*unit];
+    if(index>=3&&!terrainAt(index,p.map(n=>n/halfSize) as V3))continue;
     const d=Math.sqrt(nearestOnRoute(v(p),route).distanceSquared);
     if(d<corridorRadius+BALL_RADIUS+unit*.87)continue;
     let material:NatureMaterial=theme==='wood'?'wood':y>cells*.65?'soil':'stone';
@@ -139,40 +140,74 @@ export const levelDefinitions:readonly LevelDefinition[]=[
   {id:'woodland-cube',number:'01',name:'木漏れ日の箱庭',subtitle:'WOODLAND CUBE',description:'木の外周から、森の内側へ。',difficulty:'小さな森',materialLabel:'WOOD / MOSS',halfSize:2.2,theme:'wood'},
   {id:'earthen-passages',number:'02',name:'土の中の回廊',subtitle:'EARTHEN PASSAGES',description:'土の層をくぐり、反対側の景色へ。',difficulty:'広い回廊',materialLabel:'EARTH / ROOTS',halfSize:3.6,theme:'soil'},
   {id:'water-wilderness-lowlands',number:'03',name:'水を抱く大地',subtitle:'WATER WILDERNESS',description:'大きな大地の外と内を、ゆっくり巡る。',difficulty:'大きな大地',materialLabel:'WATER / STONE',halfSize:5.4,theme:'water'},
-  {id:'fern-hollows',number:'04',name:'シダの洞',subtitle:'FERN HOLLOWS',description:'苔の斜面を下り、曲がりくねる洞を抜ける。',difficulty:'苔の洞',materialLabel:'MOSS / EARTH',halfSize:6.6,theme:'moss'},
-  {id:'cedar-terraces',number:'05',name:'杉の段丘',subtitle:'CEDAR TERRACES',description:'木の段丘を回り、長い土のトンネルへ。',difficulty:'木の段丘',materialLabel:'WOOD / MOSS',halfSize:8,theme:'wood'},
-  {id:'river-canyon',number:'06',name:'川の峡谷',subtitle:'RIVER CANYON',description:'水を抱く崖から、対岸の回廊へ下る。',difficulty:'水の峡谷',materialLabel:'WATER / STONE',halfSize:9.6,theme:'water'},
-  {id:'basalt-garden',number:'07',name:'玄武岩の庭',subtitle:'BASALT GARDEN',description:'岩の外周と、深い地層の間を進む。',difficulty:'岩の庭',materialLabel:'STONE / MOSS',halfSize:11.4,theme:'stone'},
-  {id:'emerald-caverns',number:'08',name:'緑の大洞窟',subtitle:'EMERALD CAVERNS',description:'広い苔の台地から、幾つもの曲がり角へ。',difficulty:'緑の大洞窟',materialLabel:'MOSS / STONE',halfSize:13.4,theme:'moss'},
-  {id:'tidal-highlands',number:'09',name:'水辺の高原',subtitle:'TIDAL HIGHLANDS',description:'水辺の高原を巡り、大地の奥へ潜る。',difficulty:'水辺の高原',materialLabel:'WATER / EARTH',halfSize:15.6,theme:'water'},
-  {id:'ancient-wilderness',number:'10',name:'原生の大地',subtitle:'ANCIENT WILDERNESS',description:'最も広い大地の外と内を、端から端へ。',difficulty:'原生の大地',materialLabel:'EARTH / STONE',halfSize:18,theme:'soil'},
+  {id:'fern-hollows-v2',number:'04',name:'苔の吹き抜け',subtitle:'FERN WELL',description:'苔の縁から、吹き抜けの底へ巻き込む。',difficulty:'吹き抜け',materialLabel:'MOSS / EARTH',halfSize:6.6,theme:'moss'},
+  {id:'cedar-terraces-v2',number:'05',name:'杉の段丘',subtitle:'CEDAR TERRACES',description:'三段の木の斜面を、折り返して下る。',difficulty:'木の段丘',materialLabel:'WOOD / MOSS',halfSize:8,theme:'wood'},
+  {id:'river-canyon-v2',number:'06',name:'峡谷の橋',subtitle:'CANYON BRIDGES',description:'深い谷を、異なる高さの橋で渡る。',difficulty:'峡谷の橋',materialLabel:'WATER / STONE',halfSize:9.6,theme:'water'},
+  {id:'basalt-garden-v2',number:'07',name:'岩の螺旋',subtitle:'BASALT SPIRAL',description:'岩の塔を巻いて下り、中心を抜ける。',difficulty:'岩の螺旋',materialLabel:'STONE / MOSS',halfSize:11.4,theme:'stone'},
+  {id:'emerald-caverns-v2',number:'08',name:'二重アーチ',subtitle:'TWIN ARCHES',description:'二つの岩窓をくぐり、道の上と下を巡る。',difficulty:'二重アーチ',materialLabel:'MOSS / STONE',halfSize:13.4,theme:'moss'},
+  {id:'tidal-highlands-v2',number:'09',name:'水辺の島',subtitle:'TIDAL ISLANDS',description:'四つの島を渡り、外岸から地中へ潜る。',difficulty:'水辺の島',materialLabel:'WATER / EARTH',halfSize:15.6,theme:'water'},
+  {id:'ancient-wilderness-v2',number:'10',name:'三層の大地',subtitle:'LAYERED WILDERNESS',description:'三層に重なる道を渡り、中庭の奥へ。',difficulty:'三層迷路',materialLabel:'EARTH / STONE',halfSize:18,theme:'soil'},
 ];
 
-interface CourseShape { top:number; entry:number; inner:number; exit:number; lower:number; rotation:number }
-const courseShapes:CourseShape[]=[
-  {top:.52,entry:.22,inner:-.3,exit:.58,lower:-.4,rotation:0},
-  {top:.25,entry:-.04,inner:-.46,exit:.44,lower:-.22,rotation:1},
-  {top:.62,entry:.36,inner:-.13,exit:.68,lower:-.5,rotation:2},
-  {top:.4,entry:.08,inner:-.4,exit:.48,lower:-.3,rotation:3},
-  {top:.64,entry:.25,inner:-.5,exit:.66,lower:-.22,rotation:1},
-  {top:.32,entry:.02,inner:-.26,exit:.5,lower:-.46,rotation:2},
-  {top:.56,entry:.3,inner:-.42,exit:.62,lower:-.34,rotation:3},
-];
+// Each world has a different massing, not just a recolored, rotated cube.
+function terrainAt(index:number,[x,y,z]:V3):boolean {
+  switch(index){
+    case 3:return !(Math.abs(x)<.58&&Math.abs(z)<.58&&y>-.55); // Open well.
+    case 4:return y<(x<-.4?1:x<.1?.55:.1); // Three broad timber terraces.
+    case 5:return !(Math.abs(x)<.3&&y>-.65); // A ravine divides two banks.
+    case 6:return y<-.55||Math.max(Math.abs(x),Math.abs(z))<(y>.3?.56:.78); // Stepped tower.
+    case 7:return !(Math.abs(Math.abs(x)-.45)<.25&&Math.abs(z)<.8&&y>-.55&&y<.7); // Twin archways.
+    case 8:return y<-.55||(Math.abs(x)>.2&&Math.abs(z)>.2); // Four islands on one base.
+    case 9:return !(Math.abs(x)<.58&&Math.abs(z)<.58&&y>-.6)
+      &&!(Math.abs(x)<.2&&y<-.05&&y>-.5); // Tiered courtyard with an open lower gate.
+    default:return true;
+  }
+}
 function expandedGuides(h:number,index:number):Guide[]{
-  const shape=courseShapes[index-3],e=h+.65;
-  const g=(x:number,y:number,z:number,up:V3=[0,1,0]):Guide=>({p:[x,y,z],up});
-  const nodes=[
-    g(-h*.76,e,h*shape.top),g(h*.05,e,h*shape.top),g(h*.58,e,h*(shape.top-.12)),
-    g(e,h*.6,h*shape.entry,[1,0,0]),g(e,h*.04,h*shape.entry,[1,0,0]),
-    g(h*.48,h*.01,h*shape.entry),g(h*.02,-h*.12,h*(shape.inner+.14)),g(-h*.52,-h*.23,h*shape.inner),
-    g(-e,-h*.25,h*shape.inner,[-1,0,0]),g(-e,-h*.43,h*shape.exit,[-1,0,0]),
-    g(-h*.55,-h*.46,e,[0,0,1]),g(h*.45,-h*.46,e,[0,0,1]),
-    g(h*.4,-h*.55,h*.42),g(-h*.04,-h*.59,h*shape.lower),g(h*.52,-h*.62,-e,[0,0,-1]),
-    g(e,-h*.64,-h*.56,[1,0,0]),g(e,-h*.71,-h*.1,[1,0,0]),g(e,-h*.71,h*.35),
-  ];
-  // Quarter turns preserve downward progress and offer different entry views.
-  const turn=(p:V3):V3=>{let [x,y,z]=p;for(let n=0;n<shape.rotation;n++)[x,z]=[z,-x];return [x,y,z];};
-  return nodes.map(node=>({p:turn(node.p),up:turn(node.up)}));
+  const e=1+.65/h;
+  const g=(x:number,y:number,z:number,up:V3=[0,1,0]):Guide=>({p:[x*h,y*h,z*h],up});
+  switch(index){
+    case 3: // Descend into an open well, curl inward, then leave through its base.
+      return [g(-.85,e,.75),g(.7,e,.75),g(e,.65,.2,[1,0,0]),
+        g(.55,.32,-.5),g(-.45,.1,-.5),g(-.5,-.12,.4),g(.35,-.25,.5),
+        g(.4,-.4,-.15),g(-.05,-.5,-.25),g(-e,-.62,-.25,[-1,0,0]),
+        g(-e,-.8,.65,[-1,0,0]),g(-.3,-.8,e),g(.55,-.8,e)];
+    case 4: // Parallel switchbacks step down the timber terraces, then enter the foundation.
+      return [g(-.75,e,-.8),g(-.75,e,.75),g(-.3,.65,.85),g(-.3,.6,-.75),
+        g(.35,.18,-.85),g(.35,.15,.75),g(e,-.08,.85,[1,0,0]),g(e,-.3,-.75,[1,0,0]),
+        g(.5,-.4,-.5),g(-.5,-.55,-.5),g(-.75,-.78,.55),g(0,-.8,.65),g(.7,-.8,.65)];
+    case 5: // Alternating bridges cross a full-depth ravine at different heights.
+      return [g(-.8,e,-.85),g(-.8,e,.7),g(.8,.75,.7),g(.85,.65,-.65),
+        g(-.8,.43,-.65),g(-.85,.32,.2),g(.8,.12,.2),g(e,-.1,-.75,[1,0,0]),
+        g(.5,-.3,-e,[0,0,-1]),g(-.8,-.45,-e,[0,0,-1]),g(-.75,-.6,-.35),
+        g(0,-.75,.1),g(.75,-.82,.65),g(e,-.82,.7),g(e,-.82,.1)];
+    case 6: { // One and a half circuits of a square tower, followed by a radial tunnel.
+      const perimeter:V3[]=[[-.8,0,e],[.8,0,e],[e,0,.8],[e,0,-.8],[.8,0,-e],[-.8,0,-e],[-e,0,-.8],[-e,0,.8]];
+      const winding=Array.from({length:13},(_,i)=>{const [x,,z]=perimeter[i%8];return g(x,e-i*.12,z);});
+      return [...winding,g(.6,-.48,-.65),g(.05,-.6,-.05),g(-.65,-.72,.65),g(-e,-.82,.75),g(-e,-.82,.1),g(-e,-.82,-.55)];
+    }
+    case 7: // Two broad loops share a crossing in plan, but pass at separate heights.
+      return [g(-.85,e,-.75),g(-.75,e,.65),g(0,.85,.1),g(.8,.75,-.7),g(.85,.65,.75),
+        g(.15,.5,.85),g(-.8,.4,-.25),g(-.85,.3,-e),g(.2,.18,-e),g(.85,.05,-.2),
+        g(.75,-.08,.65),g(0,-.25,.1),g(-.8,-.4,-.65),g(-e,-.5,.65),
+        g(-.1,-.62,e),g(.85,-.72,e),g(.75,-.82,.25),g(.05,-.82,-.05),g(-.55,-.82,-.25)];
+    case 8: // Cross all four islands, sweep their outer shores, then cut through the base.
+      return [g(-.8,e,.8),g(-.8,e,-.65),g(.75,.85,-.8),g(.8,.72,.7),g(-.65,.6,.8),
+        g(-.75,.48,-.45),g(.5,.35,-.65),g(.65,.2,.45),g(-.45,.05,.65),
+        g(-e,-.08,.1,[-1,0,0]),g(-e,-.2,-.8,[-1,0,0]),g(-.6,-.3,-e,[0,0,-1]),
+        g(.75,-.4,-e,[0,0,-1]),g(e,-.5,-.6,[1,0,0]),g(e,-.58,.8,[1,0,0]),
+        g(.5,-.66,e),g(-.65,-.72,e),g(-.6,-.82,.35),g(0,-.88,-.35),g(.65,-.88,-.35),g(.9,-.88,-.35)];
+    case 9: { // Three decks of alternating traverses; outer ramps join the decks.
+      const nodes:Guide[]=[];
+      for(let floor=0;floor<3;floor++){
+        const y=floor===0?e:floor===1?.25:-.55,sign=floor%2?-1:1;
+        for(const [x,z] of [[-.8,-.75],[.8,-.75],[.8,0],[-.8,0],[-.8,.75],[.8,.75]])nodes.push(g(x*sign,y,z*sign));
+        if(floor<2){nodes.push(g(e*sign,y-.15,.55*sign,[sign,0,0]),g(e*sign,y-.4,-.55*sign,[sign,0,0]));}
+      }
+      return [...nodes,g(e,-.72,.6,[1,0,0]),g(e,-.88,-.15),g(e,-.88,-.55),g(e,-.88,-.85)];
+    }
+    default:throw new RangeError('Unknown expanded course');
+  }
 }
 
 const cache=new Map<number,Level>();

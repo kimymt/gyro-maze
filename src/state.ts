@@ -1,6 +1,8 @@
 import { Quaternion, Vector3 } from 'three';
 import { levelDefinitions } from './levels';
-const recordIds=new Set([...levelDefinitions.map(level=>level.id),'water-wilderness']);
+// Preserve retired results, but do not compare their times with redesigned courses.
+const recordIds=new Set([...levelDefinitions.map(level=>level.id),'water-wilderness',
+  'fern-hollows','cedar-terraces','river-canyon','basalt-garden','emerald-caverns','tidal-highlands','ancient-wilderness']);
 export type Phase = 'select' | 'playing' | 'paused' | 'result';
 export function localGravity(orientation: Quaternion): Vector3 { return new Vector3(0,-9.81,0).applyQuaternion(orientation.clone().invert()); }
 export class Progress {
