@@ -18,7 +18,7 @@ const root=document.querySelector<HTMLDivElement>('#app')!;
 root.innerHTML=`<div class="shell"><header class="header"><a class="brand" href="/" aria-label="GYRO ホーム">${icon('orbit')}<span>GYRO<span class="brand-dot">.</span></span></a><div class="offline-status"><span class="status-dot"></span><span id="offline-text">オフライン用データを確認中</span><button data-action="retry-offline" hidden>再試行</button><button data-action="update" hidden>更新する</button></div><button class="icon-button" data-action="help" aria-label="遊び方">${icon('help')}</button></header>
 <main class="workspace"><section class="selection" aria-label="ステージ選択"><div class="intro"><p class="intro-copy">木と土、水の中を巡る。<br>落ちる心配のない、立体迷路。</p></div><div class="level-heading"><span>ステージを選択</span></div><div class="levels">${levels.map((l,i)=>`<button class="level ${i===0?'selected':''}" data-level="${i}" aria-label="ワールド ${l.number}" aria-pressed="${i===0}"><span class="level-number">${l.number}<span class="level-lock">${icon('lock')}</span></span><span class="level-copy"><span class="record" data-record="${l.id}"></span></span><span class="difficulty">${l.difficulty}</span>${icon('chevron')}</button>`).join('')}</div>${controlMarkup(true)}<div class="start-dock"><button class="primary start" data-action="start" disabled><span id="start-label">準備しています</span>${icon('arrow')}</button></div></section>
 <section class="viewer" aria-label="3D迷路"><div class="viewer-grid" aria-hidden="true"></div><div class="scene-caption"><span class="mini-dot"></span><span class="scene-index" id="scene-index">01 / ${levelTotal}</span></div><div class="play-hud" hidden><button class="icon-button" data-action="pause" aria-label="一時停止">${icon('pause')}</button><div class="hud-title"><span id="play-number">ステージ 01</span><span class="control-label">指で操作</span></div><div class="timer" id="timer">00:00</div></div><canvas id="scene" aria-label="迷路をドラッグして回転。2本指でひねると回転、ピンチで拡大縮小。" tabindex="0"></canvas><div class="viewer-bottom"><p id="scene-description">木の外周から、森の内側へ。</p><div class="gesture-hint">${icon('orbit')}<span>ドラッグして回す</span><span class="hint-separator">/</span><span>ピンチで拡大</span></div></div><div class="play-bottom" hidden><div class="progress-row"><span id="checkpoint">スタート地点</span><span id="route-progress">道のり 0%</span></div><div class="play-tools"><button data-action="reset">${icon('reset')}視点リセット</button><button data-action="focus">球に寄る</button><button data-action="calibrate" aria-label="傾きの基準を合わせる" hidden>基準合わせ</button><button data-action="restart">再挑戦</button></div></div><div id="toast" role="status" aria-live="polite"></div></section></main>
-<aside class="install-banner" id="install-banner" aria-labelledby="install-banner-title" aria-live="polite" hidden><button class="install-dismiss" data-action="dismiss-install" aria-label="ホーム画面への追加案内を閉じる">${icon('close')}</button><h2 id="install-banner-title">オフラインで遊ぶ</h2><button class="install-link" data-action="install-guide">ホーム画面に追加する方法を見る ${icon('arrow')}</button></aside>
+
 </div><dialog id="dialog"></dialog>`;
 const $=<T extends HTMLElement=HTMLElement>(selector:string)=>root.querySelector<T>(selector)!;
 const access=new Access();
@@ -82,11 +82,14 @@ updateRecords();
 const installGuide=new InstallGuide();
 let offlineState:OfflineState='loading',updatePending=false;
 function installUI(){
-  const visible=ready&&offlineState==='ready'&&progress.phase==='select'&&!dialog.open&&installGuide.canOffer&&!installGuide.dismissed;
-  $('#install-banner').hidden=!visible;
+  if(ready&&offlineState==='ready'&&progress.phase==='select'&&!dialog.open&&!document.hidden&&installGuide.shouldPrompt){
+    installGuide.markSeen();
+    showDialog('<h2 class="install-heading">ホーム画面に追加して遊ぶ</h2><p>追加すると、次回からアイコンで起動できます。オフラインでも遊べます。</p><button class="primary" data-action="install-guide">追加方法を見る</button><button class="text-button" data-action="later-install">あとで</button>','install-prompt');
+  }
 }
 installGuide.displayMode.addEventListener('change',installUI);
 window.addEventListener('storage',installUI);
+window.addEventListener('appinstalled',()=>{installGuide.installed=true;installGuide.markSeen();if(dialog.dataset.view==='install'&&installFromHelp)renderHelp();else if(dialog.dataset.view==='install-prompt'||dialog.dataset.view==='install')dialog.close();});
 dialog.addEventListener('close',installUI);
 function offlineUI(){
   const labels={loading:'オフライン用データを保存中',ready:'オフラインで遊べます',error:'オフライン保存が完了していません',unavailable:import.meta.env.DEV?'開発プレビュー':'オフラインにはHTTPS接続が必要です'};
@@ -138,10 +141,10 @@ function updateAccess(){
   }
 }
 updateAccess();
-function showDialog(html:string,view:'help'|'install'|'fatal'|'other'='other'){
+function showDialog(html:string,view:'help'|'install'|'install-prompt'|'fatal'|'other'='other'){
   dialogGeneration++;if(view==='fatal')dialog.dispatchEvent(new Event('unlock-stop'));stopTilt();input?.clear();
   dialog.dataset.view=view;
-  if(view==='help'||view==='install')dialog.setAttribute('aria-label',view==='install'?'ホーム画面に追加':'遊び方');else dialog.removeAttribute('aria-label');
+  if(view==='help'||view==='install'||view==='install-prompt')dialog.setAttribute('aria-label',view==='help'?'遊び方':view==='install'?'ホーム画面に追加':'ホーム画面に追加して遊ぶ');else dialog.removeAttribute('aria-label');
   dialog.innerHTML=html;if(!dialog.open)dialog.showModal();controlUI();installUI();
 }
 function pause(){if(progress.phase!=='playing')return;stopTilt();progress.pause();input?.clear();accumulator=0;renderPause();}
@@ -157,17 +160,19 @@ function finish(){
 }
 let helpWasPlaying=false;
 function help(){stopTilt();helpWasPlaying=progress.phase==='playing';if(helpWasPlaying)progress.pause();input?.clear();renderHelp();}
-function renderHelp(){showDialog(`<h2>遊び方</h2><div class="help-steps"><p><b>01</b><span><strong>${controlMode==='tilt'?'端末を傾ける':'1本指で回す'}</strong>${controlMode==='tilt'?'端末を傾けると迷路も傾きます。元の持ち方に戻すと迷路も戻ります。':'ドラッグで迷路を傾ける。指を離しても球は転がり続けます。'}</span></p><p><b>02</b><span><strong>2本指で調整</strong>${controlMode==='tilt'?'指でも回せます。ピンチで拡大・縮小。持ち替えたら「基準合わせ」。':'ひねって回転。ピンチで拡大・縮小。'}</span></p><p><b>03</b><span><strong>緑のリングへ</strong>金色の中継点を順に通り、緑のゴールで球を止めるとクリア。</span></p></div><p class="help-note">Safariからホーム画面に追加したアプリで、「オフラインで遊べます」を確認してください。</p>${installGuide.canOffer?'<button class="text-button help-install" data-action="install-guide">ホーム画面に追加する方法を見る</button>':''}<button class="primary" data-action="close-help">わかった ${icon('arrow')}</button>`,'help');}
+function renderHelp(){showDialog(`<h2>遊び方</h2><div class="help-steps"><p><b>01</b><span><strong>${controlMode==='tilt'?'端末を傾ける':'1本指で回す'}</strong>${controlMode==='tilt'?'端末を傾けると迷路も傾きます。元の持ち方に戻すと迷路も戻ります。':'ドラッグで迷路を傾ける。指を離しても球は転がり続けます。'}</span></p><p><b>02</b><span><strong>2本指で調整</strong>${controlMode==='tilt'?'指でも回せます。ピンチで拡大・縮小。持ち替えたら「基準合わせ」。':'ひねって回転。ピンチで拡大・縮小。'}</span></p><p><b>03</b><span><strong>緑のリングへ</strong>金色の中継点を順に通り、緑のゴールで球を止めるとクリア。</span></p></div><p class="help-note">ホーム画面に追加したアプリで、「オフラインで遊べます」を確認してください。</p>${installGuide.canOffer?'<button class="text-button help-install" data-action="install-guide">ホーム画面に追加する方法を見る</button>':''}<button class="primary" data-action="close-help">わかった ${icon('arrow')}</button>`,'help');}
 let installFromHelp=false;
 function showInstallGuide(){
   if(!installGuide.canOffer)return;
   installFromHelp=dialog.open&&dialog.dataset.view==='help';
-  showDialog(`<h2 class="install-heading">ホーム画面に追加</h2><ol class="install-steps"><li><span class="install-step-number" aria-hidden="true">01</span><span>Safariの<strong>共有</strong>を開く<small>「その他」の中にある場合もあります。</small></span></li><li><span class="install-step-number" aria-hidden="true">02</span><span><strong>ホーム画面に追加</strong>を選ぶ</span></li><li><span class="install-step-number" aria-hidden="true">03</span><span><strong>Webアプリとして開く</strong>をオンにして<strong>追加</strong></span></li></ol><p class="help-note">追加したアプリを開き、「オフラインで遊べます」と表示されたら、通信なしで遊べます。</p><button class="primary" data-action="close-install">閉じる</button>`,'install');
+  installGuide.markSeen();
+  const steps=installGuide.platform==='android'?['Chromeの<strong>メニュー</strong>を開く','<strong>ホーム画面に追加</strong>または<strong>インストールしてショートカットを作成</strong>を選ぶ','<strong>インストール</strong>を選び、画面の指示に従う']:['Safariの<strong>共有</strong>を開く<small>「その他」の中にある場合もあります。</small>','<strong>ホーム画面に追加</strong>を選ぶ','<strong>Webアプリとして開く</strong>をオンにして<strong>追加</strong>'];
+  showDialog(`<h2 class="install-heading">ホーム画面に追加</h2><ol class="install-steps">${steps.map((step,i)=>`<li><span class="install-step-number" aria-hidden="true">0${i+1}</span><span>${step}</span></li>`).join('')}</ol><p class="help-note">追加したアプリを開き、「オフラインで遊べます」と表示されたら、通信なしで遊べます。</p><button class="primary" data-action="close-install">閉じる</button>`,'install');
   $('[data-action="close-install"]').focus();
 }
 function closeInstallGuide(){
   if(installFromHelp){renderHelp();$('[data-action="install-guide"].help-install').focus();}
-  else{dialog.close();installUI();if(!$('#install-banner').hidden)$('#install-banner [data-action="install-guide"]').focus();}
+  else{dialog.close();$('[data-action="start"]').focus();}
 }
 function closeHelp(){dialog.close();if(helpWasPlaying){if(controlMode==='tilt')renderPause();else{progress.resume();last=performance.now();}}installUI();}
 root.addEventListener('click',e=>{
@@ -188,7 +193,7 @@ root.addEventListener('click',e=>{
     case 'close-help':closeHelp();break;
     case 'install-guide':showInstallGuide();break;
     case 'close-install':closeInstallGuide();break;
-    case 'dismiss-install':installGuide.dismiss();installUI();break;
+    case 'later-install':dialog.close();$('[data-action="start"]').focus();break;
     case 'retry-offline':void offline.retry();break;
     case 'update':offline.activate();break;
     case 'reload':location.reload();break;

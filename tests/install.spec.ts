@@ -1,152 +1,75 @@
 import {test,expect,type Page} from '@playwright/test';
-
-// These tests exercise iOS eligibility in Chromium; device Safari remains a separate check.
-const iphoneSafari='Mozilla/5.0 (iPhone; CPU iPhone OS 27_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.0 Mobile/15E148 Safari/604.1';
-const ipadSafari='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.0 Safari/605.1.15';
-const installAction='ホーム画面に追加する方法を見る';
-const dismissalKey='gyro-maze-install-dismissed-at';
-const day=24*60*60*1000;
-
-test.use({userAgent:iphoneSafari,viewport:{width:393,height:852},hasTouch:true,isMobile:true});
-
-async function openReady(page:Page){
- await page.goto('/');
- await expect(page.getByRole('button',{name:'START'})).toBeEnabled();
- await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');
-}
-
-test('iPhone banner uses the approved copy, fits the mobile layout and yields to dialogs and gameplay',async({page})=>{
- await openReady(page);
- const banner=page.locator('#install-banner');
- await expect(banner).toBeVisible();
- await expect(banner.getByText('オフラインで遊ぶ',{exact:true})).toBeVisible();
- await expect(banner.getByRole('button',{name:installAction,exact:true})).toBeVisible();
- await expect(page.getByText('アイコンから、いつでもGYROに。',{exact:true})).toHaveCount(0);
- for(const colorScheme of ['light','dark'] as const){
-  await page.emulateMedia({colorScheme});
-  for(const width of [393,320]){
-   await page.setViewportSize({width,height:852});
-   const layout=await page.evaluate(()=>{
-    const controls=document.querySelector('.control-setting')!.getBoundingClientRect();
-    const notice=document.querySelector('#install-banner')!.getBoundingClientRect();
-    const header=document.querySelector('.header')!.getBoundingClientRect();
-    return {width:innerWidth,scroll:document.documentElement.scrollWidth,controlsBottom:controls.bottom,noticeTop:notice.top,noticeBottom:notice.bottom,headerBottom:header.bottom};
-   });
-   expect(layout.scroll).toBeLessThanOrEqual(layout.width);
-   expect(layout.noticeTop).toBeGreaterThanOrEqual(layout.controlsBottom-1);
-   expect(layout.headerBottom).toBeLessThanOrEqual(layout.noticeTop);
+const ios='Mozilla/5.0 (iPhone; CPU iPhone OS 27_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.0 Mobile/15E148 Safari/604.1';
+const android='Mozilla/5.0 (Linux; Android 16; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36';
+const seen='gyro-maze-install-prompt-seen-v1';
+const prompt=(page:Page)=>page.getByRole('dialog',{name:'ホーム画面に追加して遊ぶ',exact:true});
+const guide=(page:Page)=>page.getByRole('dialog',{name:'ホーム画面に追加',exact:true});
+async function ready(page:Page){await page.goto('/');await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');}
+test.use({viewport:{width:393,height:852},hasTouch:true,isMobile:true});
+for(const [name,ua] of [['ios',ios],['android',android]])test.describe(name,()=>{
+ test.use({userAgent:ua});
+ test('first ready prompt, device-specific steps and one-time persistence',async({page})=>{
+  await ready(page);await expect(prompt(page)).toBeVisible();await expect(page.locator('.start')).toBeHidden();
+  for(const width of [320,393])for(const colorScheme of ['light','dark'] as const){
+   await page.setViewportSize({width,height:568});await page.emulateMedia({colorScheme});
+   await expect(prompt(page).getByRole('button',{name:'あとで'})).toBeInViewport({ratio:1});
+   const box=(await prompt(page).boundingBox())!;expect(box.x).toBeGreaterThanOrEqual(0);expect(box.x+box.width).toBeLessThanOrEqual(width);
   }
- }
- await banner.getByRole('button',{name:installAction,exact:true}).click();
- const guide=page.getByRole('dialog',{name:'ホーム画面に追加',exact:true});
- await expect(guide).toBeVisible();await expect(banner).toBeHidden();
- const steps=guide.locator('ol > li');await expect(steps).toHaveCount(3);
- await expect(steps.nth(0)).toContainText('共有');
- await expect(steps.nth(1)).toContainText('ホーム画面に追加');
- await expect(steps.nth(2)).toContainText('Webアプリとして開く');
- await guide.getByRole('button',{name:'閉じる',exact:true}).click();
- await expect(banner).toBeVisible();
- await page.evaluate(async()=>{
-  for(const name of await caches.keys())if(name.startsWith('gyro-maze-')){
-   const cache=await caches.open(name);await cache.delete('/icon-192.png');
-  }
-  document.dispatchEvent(new Event('visibilitychange'));
+  await page.screenshot({path:`/private/tmp/gyro-install-${name}.png`});
+  await page.getByRole('button',{name:'追加方法を見る',exact:true}).click();
+  await expect(guide(page).locator('li')).toHaveCount(3);
+  await expect(guide(page)).toContainText(name==='ios'?'Safariの共有':'Chromeのメニュー');
+  await expect(guide(page)).toContainText(name==='ios'?'Webアプリとして開く':'インストールしてショートカットを作成');
+  await expect(guide(page)).not.toContainText(name==='ios'?'Chrome':'Safari');
+  await page.getByRole('button',{name:'閉じる',exact:true}).click();await expect(page.locator('.start')).toBeVisible();
+  await page.reload();await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');await expect(prompt(page)).toBeHidden();
+  await page.getByRole('button',{name:'遊び方',exact:true}).click();await page.getByRole('button',{name:'ホーム画面に追加する方法を見る'}).click();await expect(guide(page)).toBeVisible();
  });
- await expect(page.locator('#offline-text')).toHaveText('オフライン保存が完了していません');
- await expect(banner).toBeHidden();
- await page.getByRole('button',{name:'再試行',exact:true}).click();
- await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');
- await expect(banner).toBeVisible();
- await page.getByRole('button',{name:'START'}).click();
- await expect(banner).toBeHidden();
- await page.getByRole('button',{name:'一時停止'}).click();
- await page.getByRole('button',{name:'ステージ選択へ'}).click();
- await expect(banner).toBeVisible();
-});
-
-test('dismissal lasts seven days while help keeps the installation guide available',async({page})=>{
- await openReady(page);
- await page.getByRole('button',{name:'ホーム画面への追加案内を閉じる'}).click();
- await expect(page.locator('#install-banner')).toBeHidden();
- const dismissedAt=await page.evaluate(key=>Number(localStorage.getItem(key)),dismissalKey);
- expect(dismissedAt).toBeGreaterThan(Date.now()-60_000);
- await page.reload();await expect(page.getByRole('button',{name:'START'})).toBeEnabled();
- await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');
- await expect(page.locator('#install-banner')).toBeHidden();
- await page.getByRole('button',{name:'遊び方'}).click();
- await page.getByRole('dialog').getByRole('button',{name:installAction,exact:true}).click();
- await expect(page.getByRole('dialog',{name:'ホーム画面に追加',exact:true})).toBeVisible();
- await page.getByRole('button',{name:'閉じる',exact:true}).click();
- await expect(page.getByRole('dialog').getByText('1本指で回す',{exact:true})).toBeVisible();
- await page.getByRole('button',{name:'わかった'}).click();
- await expect(page.locator('#install-banner')).toBeHidden();
- await page.evaluate(({key,at})=>localStorage.setItem(key,String(at)),{key:dismissalKey,at:Date.now()-8*day});
- await page.reload();await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');
- await expect(page.locator('#install-banner')).toBeVisible();
-});
-
-test('closing an installation guide opened from gameplay help keeps the game paused until help closes',async({page})=>{
- await openReady(page);await page.getByRole('button',{name:'START'}).click();
- await expect(page.locator('#timer')).not.toHaveText('00:00');
- await page.getByRole('button',{name:'遊び方'}).click();
- const pausedTime=await page.locator('#timer').textContent();
- await page.getByRole('dialog').getByRole('button',{name:installAction,exact:true}).click();
- await page.getByRole('button',{name:'閉じる',exact:true}).click();
- await expect(page.getByRole('dialog').getByText('1本指で回す',{exact:true})).toBeVisible();
- await page.waitForTimeout(1100);await expect(page.locator('#timer')).toHaveText(pausedTime!);
- await expect(page.locator('#install-banner')).toBeHidden();
- await page.getByRole('dialog').getByRole('button',{name:installAction,exact:true}).click();
- await page.keyboard.press('Escape');
- await expect(page.getByRole('dialog').getByText('1本指で回す',{exact:true})).toBeVisible();
- await expect(page.locator('#timer')).toHaveText(pausedTime!);
- await page.getByRole('button',{name:'わかった'}).click();
- await expect(page.locator('#timer')).not.toHaveText(pausedTime!);
-});
-
-test('unavailable storage still allows session dismissal, help and gameplay',async({page})=>{
- const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
- await page.addInitScript(()=>{
-  Storage.prototype.getItem=()=>{throw new DOMException('Storage unavailable','SecurityError');};
-  Storage.prototype.setItem=()=>{throw new DOMException('Storage unavailable','SecurityError');};
+ test('later and Escape do not prompt again',async({page})=>{
+  await ready(page);await page.getByRole('button',{name:'あとで',exact:true}).click();await page.reload();await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');await expect(prompt(page)).toBeHidden();
+  await page.evaluate(key=>localStorage.removeItem(key),seen);await page.reload();await expect(prompt(page)).toBeVisible();await page.keyboard.press('Escape');await expect(prompt(page)).toBeHidden();
+  await page.getByRole('button',{name:'START',exact:true}).click();await expect(page.locator('.play-hud')).toBeVisible();
  });
- await openReady(page);await expect(page.locator('#install-banner')).toBeVisible();
- await page.getByRole('button',{name:'ホーム画面への追加案内を閉じる'}).click();
- await page.getByRole('button',{name:'遊び方'}).click();
- await page.getByRole('dialog').getByRole('button',{name:installAction,exact:true}).click();
- await page.getByRole('button',{name:'閉じる',exact:true}).click();
- await page.getByRole('button',{name:'わかった'}).click();
- await expect(page.locator('#install-banner')).toBeHidden();
- await page.getByRole('button',{name:'START'}).click();
- await expect(page.locator('#timer')).not.toHaveText('00:00');
- expect(errors).toEqual([]);
 });
-
-test('standalone and other browsers omit the prompt; desktop-style iPad Safari remains eligible',async({browser})=>{
- const cases=[
-  {name:'desktop Safari',userAgent:ipadSafari,touch:false,mode:'browser',eligible:false},
-  {name:'iPhone Chrome',userAgent:iphoneSafari.replace('Version/27.0','CriOS/150.0.0.0'),touch:true,mode:'browser',eligible:false},
-  {name:'iOS standalone',userAgent:iphoneSafari,touch:true,mode:'navigator',eligible:false},
-  {name:'display-mode standalone',userAgent:iphoneSafari,touch:true,mode:'media',eligible:false},
-  {name:'desktop-style iPad Safari',userAgent:ipadSafari,touch:true,mode:'browser',eligible:true},
- ];
- for(const scenario of cases){
-  await test.step(scenario.name,async()=>{
-   const context=await browser.newContext({baseURL:'http://127.0.0.1:4173',userAgent:scenario.userAgent,hasTouch:scenario.touch,viewport:{width:393,height:852}});
-   try{
-    await context.addInitScript(({mode,touch})=>{
-     Object.defineProperty(navigator,'platform',{value:'MacIntel'});
-     Object.defineProperty(navigator,'maxTouchPoints',{value:touch?5:0});
-     if(mode==='navigator')Object.defineProperty(navigator,'standalone',{value:true});
-     if(mode==='media'){
-      const matchMedia=window.matchMedia.bind(window);
-      window.matchMedia=query=>{const result=matchMedia(query);if(query.includes('display-mode')&&query.includes('standalone'))Object.defineProperty(result,'matches',{value:true});return result;};
-     }
-    },{mode:scenario.mode,touch:scenario.touch});
-    const page=await context.newPage();await openReady(page);
-    await expect(page.locator('#install-banner')).toBeVisible({visible:scenario.eligible});
-    await page.getByRole('button',{name:'遊び方'}).click();
-    await expect(page.getByRole('dialog').getByRole('button',{name:installAction,exact:true})).toHaveCount(scenario.eligible?1:0);
-   }finally{await context.close();}
-  });
+test.describe('iOS lifecycle',()=>{
+ test.use({userAgent:ios});
+ test('an existing dialog is never replaced, then invitation appears after it closes',async({page})=>{
+  await page.addInitScript(()=>{const register=navigator.serviceWorker.register.bind(navigator.serviceWorker);navigator.serviceWorker.register=async(...args)=>{await new Promise(r=>setTimeout(r,2500));return register(...args);};});
+  await page.goto('/');await page.getByRole('button',{name:'遊び方',exact:true}).click();await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');await expect(page.getByRole('dialog',{name:'遊び方',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'わかった'}).click();await expect(prompt(page)).toBeVisible();
+ });
+ test('storage denial keeps dismissal for the session; gameplay help stays paused',async({page})=>{
+  await page.addInitScript(()=>{Storage.prototype.getItem=()=>{throw Error('denied');};Storage.prototype.setItem=()=>{throw Error('denied');};});
+  await ready(page);await page.getByRole('button',{name:'あとで'}).click();await page.getByRole('button',{name:'START',exact:true}).click();await expect(page.locator('#timer')).not.toHaveText('00:00');
+  await page.getByRole('button',{name:'遊び方',exact:true}).click();const time=await page.locator('#timer').textContent();
+  await page.getByRole('button',{name:'ホーム画面に追加する方法を見る'}).click();await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog',{name:'遊び方',exact:true})).toBeVisible();await page.waitForTimeout(1100);await expect(page.locator('#timer')).toHaveText(time!);
+  await page.getByRole('button',{name:'わかった'}).click();await expect(page.locator('#timer')).not.toHaveText(time!);await expect(prompt(page)).toBeHidden();
+ });
+ test('previous banner dismissal is respected',async({page})=>{
+  await page.addInitScript(()=>localStorage.setItem('gyro-maze-install-dismissed-at',String(Date.now())));await ready(page);await expect(prompt(page)).toBeHidden();
+ });
+});
+test('standalone and unsupported browsers omit the prompt; iPad Safari is supported',async({browser})=>{
+ const ipad='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.0 Safari/605.1.15';
+ for(const [ua,mode,touch,eligible] of [[ios,'standalone',true,false],[android,'standalone',true,false],[ios.replace('Version/27.0','CriOS/150.0'),'browser',true,false],[android.replace('Chrome/','SamsungBrowser/25 Chrome/'),'browser',true,false],[ipad,'browser',false,false],[ipad,'browser',true,true]] as const){
+  const context=await browser.newContext({baseURL:'http://127.0.0.1:4173',userAgent:ua,hasTouch:touch});
+  try{
+   await context.addInitScript(({mode,touch})=>{Object.defineProperty(navigator,'platform',{value:'MacIntel'});Object.defineProperty(navigator,'maxTouchPoints',{value:touch?5:0});if(mode==='standalone'){const media=matchMedia.bind(window);window.matchMedia=q=>{const result=media(q);if(q==='(display-mode: standalone)')Object.defineProperty(result,'matches',{value:true});return result;};}},{mode,touch});
+   const page=await context.newPage();await ready(page);await expect(prompt(page)).toBeVisible({visible:eligible});
+  }finally{await context.close();}
  }
+});
+test.describe('Android install completion',()=>{
+ test.use({userAgent:android});
+ test('installation closes the invitation and removes the help offer',async({page})=>{
+  await ready(page);await expect(prompt(page)).toBeVisible();await page.evaluate(()=>window.dispatchEvent(new Event('appinstalled')));await expect(prompt(page)).toBeHidden();
+  await page.getByRole('button',{name:'遊び方',exact:true}).click();await expect(page.getByRole('button',{name:'ホーム画面に追加する方法を見る'})).toHaveCount(0);
+ });
+ test('installation from gameplay help returns to paused help',async({page})=>{
+  await ready(page);await page.getByRole('button',{name:'あとで'}).click();await page.getByRole('button',{name:'START',exact:true}).click();await expect(page.locator('#timer')).not.toHaveText('00:00');
+  await page.getByRole('button',{name:'遊び方',exact:true}).click();const time=await page.locator('#timer').textContent();await page.getByRole('button',{name:'ホーム画面に追加する方法を見る'}).click();
+  await page.evaluate(()=>window.dispatchEvent(new Event('appinstalled')));await expect(page.getByRole('dialog',{name:'遊び方',exact:true})).toBeVisible();await expect(page.locator('#timer')).toHaveText(time!);
+  await page.getByRole('button',{name:'わかった'}).click();await expect(page.locator('#timer')).not.toHaveText(time!);
+ });
 });

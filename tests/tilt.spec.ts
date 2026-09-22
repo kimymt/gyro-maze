@@ -17,6 +17,7 @@ test.use({userAgent:iphoneSafari,viewport:{width:393,height:852},hasTouch:true,i
 
 async function mockSensors(page:Page,orientation:PermissionResult='granted',motion:PermissionResult='granted'){
  await page.addInitScript(({orientation,motion})=>{
+  localStorage.setItem('gyro-maze-install-prompt-seen-v1','1');
   const calls={orientation:0,motion:0},active={orientation:0,motion:0};
   const pending:Array<(result:'granted'|'denied')=>void>=[];
   let beta=45,gamma=0,timer:ReturnType<typeof setInterval>|undefined;
