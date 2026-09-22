@@ -6,7 +6,7 @@ const iphoneSafari='Mozilla/5.0 (iPhone; CPU iPhone OS 27_0 like Mac OS X) Apple
 
 async function openReady(page:Page){
  await page.goto('/');
- await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();
+ await expect(page.getByRole('button',{name:'START'})).toBeEnabled();
  await expect(page.locator('[data-level]')).toHaveCount(12);
 }
 
@@ -19,7 +19,7 @@ test('stage 10 can be selected by keyboard and stage counts remain correct after
  await expect(last).toHaveAttribute('aria-pressed','true');
  await expect(page.locator('[data-level][aria-pressed="true"]')).toHaveCount(1);
  await expect(page.locator('#scene-index')).toHaveText('10 / 12');
- await page.getByRole('button',{name:'この世界で遊ぶ'}).click();
+ await page.getByRole('button',{name:'START'}).click();
  await expect(page.locator('#play-number')).toHaveText('ステージ 10');
  await expect(page.locator('#timer')).not.toHaveText('00:00');
  await page.getByRole('button',{name:'一時停止'}).click();
@@ -37,13 +37,13 @@ test('new-stage records survive startup, a settings save and a subsequent reload
  records['water-wilderness']={time:123,falls:0};
  for(const id of ids.slice(3,10))records[id.replace(/-v2$/,'')]={time:10,falls:0};
  await page.evaluate(records=>localStorage.setItem('gyro-maze-save',JSON.stringify({version:1,quality:'auto',records})),records);
- await page.reload();await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();
+ await page.reload();await expect(page.getByRole('button',{name:'START'})).toBeEnabled();
  for(let i=0;i<12;i++)await expect(page.locator(`[data-record="${ids[i]}"]`)).toHaveText(`BEST 01:${i.toString().padStart(2,'0')}`);
- await page.locator('[data-level="9"]').click();await page.getByRole('button',{name:'この世界で遊ぶ'}).click();
+ await page.locator('[data-level="9"]').click();await page.getByRole('button',{name:'START'}).click();
  await page.getByRole('button',{name:'一時停止'}).click();
  await page.getByRole('combobox',{name:'描画品質'}).selectOption('low');
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('gyro-maze-save')!))).toEqual({version:1,quality:'low',records});
- await page.reload();await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();
+ await page.reload();await expect(page.getByRole('button',{name:'START'})).toBeEnabled();
  await expect(page.locator('[data-level="0"]')).toHaveAttribute('aria-pressed','true');
  await expect(page.locator('#scene-index')).toHaveText('01 / 12');
  for(let i=3;i<12;i++)await expect(page.locator(`[data-record="${ids[i]}"]`)).toHaveText(`BEST 01:${i.toString().padStart(2,'0')}`);
@@ -73,7 +73,7 @@ test.describe('expanded stage picker on phones',()=>{
   await last.scrollIntoViewIfNeeded();await expect(last).toBeInViewport();await last.click();
   await expect(page.locator('#scene-index')).toHaveText('10 / 12');
   await page.screenshot({path:test.info().outputPath(`stage-picker-${viewport.width}x${viewport.height}.png`),fullPage:true});
-  const start=page.getByRole('button',{name:'この世界で遊ぶ'});
+  const start=page.getByRole('button',{name:'START'});
   await start.scrollIntoViewIfNeeded();await expect(start).toBeInViewport();await start.click();
   await expect(page.locator('#play-number')).toHaveText('ステージ 10');
   await expect(page.getByRole('button',{name:'一時停止'})).toBeInViewport();

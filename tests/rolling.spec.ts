@@ -2,8 +2,8 @@ import {test,expect} from '@playwright/test';
 for(const started of [false,true])test(`resting ball rolls after releasing a drag in ${started?'game':'preview'}`,async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('gyro-maze-save',JSON.stringify({version:1,records:{},quality:'low'})));
  await page.goto(process.env.GYRO_TEST_URL??'/');
- await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();
- if(started){await page.getByRole('button',{name:'この世界で遊ぶ'}).click();await expect.poll(async()=>page.locator('#timer').textContent(),{timeout:15000}).toBe('00:06');}
+ await expect(page.getByRole('button',{name:'START'})).toBeEnabled();
+ if(started){await page.getByRole('button',{name:'START'}).click();await expect.poll(async()=>page.locator('#timer').textContent(),{timeout:15000}).toBe('00:06');}
  else await page.waitForTimeout(6500);
  const canvas=page.locator('canvas');const rect=(await canvas.boundingBox())!;
  const x=rect.x+rect.width/2,y=rect.y+rect.height/2;

@@ -73,11 +73,11 @@ async function mockSensors(page:Page,orientation:PermissionResult='granted',moti
 
 const picker=(page:Page)=>page.locator('.control-picker:visible');
 const choice=(page:Page,mode:'touch'|'tilt')=>picker(page).locator(`[data-control="${mode}"]`);
-async function openReady(page:Page){await page.goto('/');await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();}
+async function openReady(page:Page){await page.goto('/');await expect(page.getByRole('button',{name:'START'})).toBeEnabled();}
 async function sensorState(page:Page){return page.evaluate(()=>{const h=(window as unknown as SensorWindow).__tiltTest;return {calls:h.calls,active:h.active};});}
 async function stream(page:Page){await page.evaluate(()=>(window as unknown as SensorWindow).__tiltTest.stream());}
 async function enableTilt(page:Page){await stream(page);await choice(page,'tilt').click();await expect(choice(page,'tilt')).toHaveAttribute('aria-pressed','true');await expect(choice(page,'tilt')).toBeEnabled();}
-async function start(page:Page){await page.getByRole('button',{name:'この世界で遊ぶ'}).click();await expect(page.locator('#timer')).not.toHaveText('00:00');}
+async function start(page:Page){await page.getByRole('button',{name:'START'}).click();await expect(page.locator('#timer')).not.toHaveText('00:00');}
 async function expectStopped(page:Page){await expect.poll(async()=> (await sensorState(page)).active).toEqual({orientation:0,motion:0});}
 async function expectTimerStopped(page:Page){const time=await page.locator('#timer').textContent();await page.waitForTimeout(1150);await expect(page.locator('#timer')).toHaveText(time!);}
 async function modelImage(page:Page,path?:string){
@@ -103,7 +103,7 @@ test('every launch defaults to touch without permission requests or sensor subsc
  await mockSensors(page);await openReady(page);
  await expect(choice(page,'touch')).toHaveAttribute('aria-pressed','true');
  expect(await sensorState(page)).toEqual({calls:{orientation:0,motion:0},active:{orientation:0,motion:0}});
- await enableTilt(page);await page.reload();await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();
+ await enableTilt(page);await page.reload();await expect(page.getByRole('button',{name:'START'})).toBeEnabled();
  await expect(choice(page,'touch')).toHaveAttribute('aria-pressed','true');
  expect(await sensorState(page)).toEqual({calls:{orientation:0,motion:0},active:{orientation:0,motion:0}});
  await start(page);expect(await sensorState(page)).toEqual({calls:{orientation:0,motion:0},active:{orientation:0,motion:0}});
@@ -192,7 +192,7 @@ test('tilt can be selected for the first time after an offline reload',async({pa
  await mockSensors(page);await openReady(page);await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');
  await context.setOffline(true);
  try{
-  await page.reload();await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();
+  await page.reload();await expect(page.getByRole('button',{name:'START'})).toBeEnabled();
   expect((await sensorState(page)).calls).toEqual({orientation:0,motion:0});await enableTilt(page);await start(page);
   expect(errors).toEqual([]);
  }finally{await context.setOffline(false);}
@@ -201,7 +201,7 @@ test('tilt can be selected for the first time after an offline reload',async({pa
 test('starting without a fresh sensor sample keeps the clock stopped and offers touch recovery',async({page})=>{
  await mockSensors(page);await openReady(page);await enableTilt(page);
  await page.evaluate(()=>(window as unknown as SensorWindow).__tiltTest.stop());
- await page.getByRole('button',{name:'この世界で遊ぶ'}).click();
+ await page.getByRole('button',{name:'START'}).click();
  await page.waitForTimeout(1500);await expect(page.locator('#timer')).toHaveText('00:00');
  await expect(page.getByRole('heading',{name:'一時停止',exact:true})).toBeVisible({timeout:7000});
  await expect(choice(page,'touch')).toHaveAttribute('aria-pressed','true');
@@ -235,7 +235,7 @@ for(const mode of ['touch','tilt'] as const)test(`a lost graphics context in ${m
  await page.keyboard.press('Escape');
  await expect(page.getByRole('dialog')).toBeVisible();await expect(page.getByRole('dialog')).toHaveAttribute('data-view','fatal');
  await expect(page.getByRole('button',{name:'再読み込み',exact:true})).toBeVisible();await expectTimerStopped(page);await expectStopped(page);
- await page.getByRole('button',{name:'再読み込み',exact:true}).click();await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();
+ await page.getByRole('button',{name:'再読み込み',exact:true}).click();await expect(page.getByRole('button',{name:'START'})).toBeEnabled();
  await expect(choice(page,'touch')).toHaveAttribute('aria-pressed','true');
  await start(page);
 });

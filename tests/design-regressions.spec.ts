@@ -18,11 +18,11 @@ test('help stays usable while physics loads and remains open when the game becom
   await expect(help.getByText('1本指で回す',{exact:true})).toBeVisible();
 
   release();
-  await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();
+  await expect(page.getByRole('button',{name:'START'})).toBeEnabled();
   await expect(help).toBeVisible();
   await help.getByRole('button',{name:'わかった'}).click();
   await expect(page.locator('canvas')).toHaveCount(1);
-  await page.getByRole('button',{name:'この世界で遊ぶ'}).click();
+  await page.getByRole('button',{name:'START'}).click();
   await expect(page.locator('.play-hud')).toBeVisible();
   await expect(page.locator('#timer')).not.toHaveText('00:00');
   expect(errors).toEqual([]);
@@ -43,10 +43,10 @@ test('a failed physics download offers reload and a successful retry can start t
  await expect(page.locator('#start-label')).toHaveText('読み込めませんでした');
  await failure.getByRole('button',{name:'再読み込み',exact:true}).click();
 
- await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();
+ await expect(page.getByRole('button',{name:'START'})).toBeEnabled();
  await expect(page.getByRole('dialog')).toBeHidden();
  await expect(page.locator('canvas')).toHaveCount(1);
- await page.getByRole('button',{name:'この世界で遊ぶ'}).click();
+ await page.getByRole('button',{name:'START'}).click();
  await expect(page.locator('#timer')).not.toHaveText('00:00');
  expect(failed).toBe(true);
  expect(errors).toEqual([]);

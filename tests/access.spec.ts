@@ -1,21 +1,21 @@
 import {test,expect,type Page} from '@playwright/test';
-async function gate(page:Page){await page.goto('/');await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();await page.locator('[data-level="6"]').click();await page.getByRole('button',{name:'この世界で遊ぶ'}).click();await expect(page.getByRole('heading',{name:'07〜12を解放する'})).toBeVisible();}
+async function gate(page:Page){await page.goto('/');await expect(page.getByRole('button',{name:'START'})).toBeEnabled();await page.locator('[data-level="6"]').click();await page.getByRole('button',{name:'START'}).click();await expect(page.getByRole('heading',{name:'07〜12を解放する'})).toBeVisible();}
 test('first six are free; share cancellation and copying never grant access',async({page})=>{
  await page.addInitScript(()=>{Object.defineProperty(navigator,'share',{value:()=>Promise.reject(new DOMException('cancel','AbortError'))});});
- await page.goto('/');await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();
- for(let i=0;i<6;i++){await page.locator(`[data-level="${i}"]`).click();await page.getByRole('button',{name:'この世界で遊ぶ'}).click();await expect(page.locator('.play-hud')).toBeVisible();await page.getByRole('button',{name:'一時停止'}).click();await page.getByRole('button',{name:'ステージ選択へ'}).click();}
- await page.locator('[data-level="6"]').click();await page.getByRole('button',{name:'この世界で遊ぶ'}).click();await page.getByRole('button',{name:'SNSでシェア',exact:true}).click();await page.getByRole('button',{name:'共有先を選ぶ'}).click();
+ await page.goto('/');await expect(page.getByRole('button',{name:'START'})).toBeEnabled();
+ for(let i=0;i<6;i++){await page.locator(`[data-level="${i}"]`).click();await page.getByRole('button',{name:'START'}).click();await expect(page.locator('.play-hud')).toBeVisible();await page.getByRole('button',{name:'一時停止'}).click();await page.getByRole('button',{name:'ステージ選択へ'}).click();}
+ await page.locator('[data-level="6"]').click();await page.getByRole('button',{name:'START'}).click();await page.getByRole('button',{name:'SNSでシェア',exact:true}).click();await page.getByRole('button',{name:'共有先を選ぶ'}).click();
  expect(await page.evaluate(()=>localStorage.getItem('gyro-maze-access-v1'))).toBeNull();
  await page.getByRole('button',{name:'リンクをコピー'}).click();expect(await page.evaluate(()=>localStorage.getItem('gyro-maze-access-v1'))).toBeNull();
  await page.getByRole('button',{name:'シェアしました'}).click();await expect(page.locator('[data-level].locked')).toHaveCount(0);
- await page.reload();await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();await expect(page.locator('[data-level].locked')).toHaveCount(0);
+ await page.reload();await expect(page.getByRole('button',{name:'START'})).toBeEnabled();await expect(page.locator('[data-level].locked')).toHaveCount(0);
 });
 test('donation requires explicit declaration and works offline after caching',async({page,context})=>{
  await gate(page);await page.getByRole('button',{name:'寄付する',exact:true}).click();expect(await page.evaluate(()=>localStorage.getItem('gyro-maze-access-v1'))).toBeNull();await page.getByRole('button',{name:'寄付しました'}).click();
- await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');await context.setOffline(true);await page.reload();await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();await page.locator('[data-level="11"]').click();await page.getByRole('button',{name:'この世界で遊ぶ'}).click();await expect(page.locator('.play-hud')).toBeVisible();
+ await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');await context.setOffline(true);await page.reload();await expect(page.getByRole('button',{name:'START'})).toBeEnabled();await page.locator('[data-level="11"]').click();await page.getByRole('button',{name:'START'}).click();await expect(page.locator('.play-hud')).toBeVisible();
 });
 test('the next-course action from 06 cannot bypass the gate',async({page})=>{
- await page.goto('/');await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();await page.locator('[data-level="5"]').click();
+ await page.goto('/');await expect(page.getByRole('button',{name:'START'})).toBeEnabled();await page.locator('[data-level="5"]').click();
  // Exercise the same delegated action used by the completion dialog without
  // replacing physics or adding a production cheat endpoint.
  await page.evaluate(()=>{const button=document.createElement('button');button.dataset.action='next';button.id='next-test';document.querySelector('#app')!.append(button);button.click();button.remove();});
@@ -34,7 +34,7 @@ test('Lightning address and QR never unlock; declaration alone unlocks locally w
  await page.getByRole('button',{name:'送金しました',exact:true}).click();await expect(page.locator('[data-level].locked')).toHaveCount(0);
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('gyro-maze-access-v1')!))).toEqual({version:1,method:'lightning'});
  await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');await context.setOffline(true);await page.reload();
- await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();await page.locator('[data-level="11"]').click();await page.getByRole('button',{name:'この世界で遊ぶ'}).click();await expect(page.locator('.play-hud')).toBeVisible();
+ await expect(page.getByRole('button',{name:'START'})).toBeEnabled();await page.locator('[data-level="11"]').click();await page.getByRole('button',{name:'START'}).click();await expect(page.locator('.play-hud')).toBeVisible();
  expect(requests).toEqual([]);
 });
 test('legacy pending invoices are removed, BEST survives, and already-paid users can declare offline',async({page,context})=>{
@@ -51,7 +51,7 @@ test('legacy pending invoices are removed, BEST survives, and already-paid users
 });
 test('an existing Lightning unlock survives migration',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('gyro-maze-access-v1',JSON.stringify({version:1,method:'lightning'})));
- await page.goto('/');await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();await expect(page.locator('[data-level].locked')).toHaveCount(0);
+ await page.goto('/');await expect(page.getByRole('button',{name:'START'})).toBeEnabled();await expect(page.locator('[data-level].locked')).toHaveCount(0);
 });
 test('Lightning declaration works for the session when storage is unavailable',async({page})=>{
  await page.addInitScript(()=>{Storage.prototype.getItem=()=>{throw Error('unavailable');};Storage.prototype.setItem=()=>{throw Error('unavailable');};Storage.prototype.removeItem=()=>{throw Error('unavailable');};});

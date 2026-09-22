@@ -172,3 +172,11 @@ dialog .help-note{overflow-wrap:anywhere}
 /* A single-line address can scroll horizontally without breaking the layout. */
 dialog .payment-field input{min-width:0;width:100%;background:var(--dialog-bg);line-height:1.5}
 dialog .payment-wallet,dialog [data-unlock="copy-address"],dialog [data-unlock="sent"]{white-space:nowrap;line-height:1.5;padding:14px 8px;text-align:center}
+
+/* Reserve the same space in the document as the mobile start dock occupies. */
+@media(max-width:980px){
+ .shell:not(.is-playing){padding-bottom:calc(80px + var(--safe-bottom))}
+ .start-dock{position:fixed;left:0;right:0;bottom:0;z-index:5;padding:12px 6% calc(12px + var(--safe-bottom));background:var(--page-bg);border-top:1px solid var(--line)}
+ .start-dock .start{margin:0;min-height:54px}
+ #app:has(dialog[open]) .start-dock{visibility:hidden;pointer-events:none}
+}

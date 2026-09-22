@@ -11,7 +11,7 @@ test.use({userAgent:iphoneSafari,viewport:{width:393,height:852},hasTouch:true,i
 
 async function openReady(page:Page){
  await page.goto('/');
- await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();
+ await expect(page.getByRole('button',{name:'START'})).toBeEnabled();
  await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');
 }
 
@@ -27,13 +27,13 @@ test('iPhone banner uses the approved copy, fits the mobile layout and yields to
   for(const width of [393,320]){
    await page.setViewportSize({width,height:852});
    const layout=await page.evaluate(()=>{
-    const start=document.querySelector('.start')!.getBoundingClientRect();
+    const controls=document.querySelector('.control-setting')!.getBoundingClientRect();
     const notice=document.querySelector('#install-banner')!.getBoundingClientRect();
     const header=document.querySelector('.header')!.getBoundingClientRect();
-    return {width:innerWidth,scroll:document.documentElement.scrollWidth,startBottom:start.bottom,noticeTop:notice.top,noticeBottom:notice.bottom,headerBottom:header.bottom};
+    return {width:innerWidth,scroll:document.documentElement.scrollWidth,controlsBottom:controls.bottom,noticeTop:notice.top,noticeBottom:notice.bottom,headerBottom:header.bottom};
    });
    expect(layout.scroll).toBeLessThanOrEqual(layout.width);
-   expect(layout.noticeTop).toBeGreaterThanOrEqual(layout.startBottom-1);
+   expect(layout.noticeTop).toBeGreaterThanOrEqual(layout.controlsBottom-1);
    expect(layout.headerBottom).toBeLessThanOrEqual(layout.noticeTop);
   }
  }
@@ -57,7 +57,7 @@ test('iPhone banner uses the approved copy, fits the mobile layout and yields to
  await page.getByRole('button',{name:'再試行',exact:true}).click();
  await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');
  await expect(banner).toBeVisible();
- await page.getByRole('button',{name:'この世界で遊ぶ'}).click();
+ await page.getByRole('button',{name:'START'}).click();
  await expect(banner).toBeHidden();
  await page.getByRole('button',{name:'一時停止'}).click();
  await page.getByRole('button',{name:'ステージ選択へ'}).click();
@@ -70,7 +70,7 @@ test('dismissal lasts seven days while help keeps the installation guide availab
  await expect(page.locator('#install-banner')).toBeHidden();
  const dismissedAt=await page.evaluate(key=>Number(localStorage.getItem(key)),dismissalKey);
  expect(dismissedAt).toBeGreaterThan(Date.now()-60_000);
- await page.reload();await expect(page.getByRole('button',{name:'この世界で遊ぶ'})).toBeEnabled();
+ await page.reload();await expect(page.getByRole('button',{name:'START'})).toBeEnabled();
  await expect(page.locator('#offline-text')).toHaveText('オフラインで遊べます');
  await expect(page.locator('#install-banner')).toBeHidden();
  await page.getByRole('button',{name:'遊び方'}).click();
@@ -86,7 +86,7 @@ test('dismissal lasts seven days while help keeps the installation guide availab
 });
 
 test('closing an installation guide opened from gameplay help keeps the game paused until help closes',async({page})=>{
- await openReady(page);await page.getByRole('button',{name:'この世界で遊ぶ'}).click();
+ await openReady(page);await page.getByRole('button',{name:'START'}).click();
  await expect(page.locator('#timer')).not.toHaveText('00:00');
  await page.getByRole('button',{name:'遊び方'}).click();
  const pausedTime=await page.locator('#timer').textContent();
@@ -116,7 +116,7 @@ test('unavailable storage still allows session dismissal, help and gameplay',asy
  await page.getByRole('button',{name:'閉じる',exact:true}).click();
  await page.getByRole('button',{name:'わかった'}).click();
  await expect(page.locator('#install-banner')).toBeHidden();
- await page.getByRole('button',{name:'この世界で遊ぶ'}).click();
+ await page.getByRole('button',{name:'START'}).click();
  await expect(page.locator('#timer')).not.toHaveText('00:00');
  expect(errors).toEqual([]);
 });
